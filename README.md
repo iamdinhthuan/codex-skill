@@ -11,6 +11,8 @@ real code when requested, verify the result, and report only the useful output.
 
 - `AGENTS.md` - main Codex team operating prompt
 - `SKILL.md` - compact surgical-coding guideline skill
+- `docs/WORKLOG.md` - durable task memory for completed, active, pending,
+  blocked, and skipped work
 - `skills/everything-claude-code/` - curated local copies of essential skills
   from `affaan-m/everything-claude-code`
 - `skills/stitch-skills/` - local copies of Google Stitch skills for
