@@ -111,10 +111,14 @@ architecture constraints, style rules, domain context, and deployment notes.
 cd ~/codex_skill
 git pull --ff-only
 
-cp AGENTS.md ~/.codex/AGENTS.md
+cp global/AGENTS.md ~/.codex/AGENTS.md
 rm -rf ~/.codex/skills/codex-team-skills ~/.codex/skills/stitch-skills
 cp -R skills/codex-team-skills ~/.codex/skills/codex-team-skills
 cp -R skills/stitch-skills ~/.codex/skills/stitch-skills
+cp templates/PROJECT_WORKLOG.md ~/.codex/templates/PROJECT_WORKLOG.md
+cp templates/PROJECT_AGENTS.md ~/.codex/templates/PROJECT_AGENTS.md
+cp bin/codex-bootstrap-project ~/.codex/bin/codex-bootstrap-project
+chmod +x ~/.codex/bin/codex-bootstrap-project
 ```
 
 After updating, rerun the verification commands above.
