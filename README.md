@@ -13,6 +13,8 @@ real code when requested, verify the result, and report only the useful output.
 - `SKILL.md` - compact surgical-coding guideline skill
 - `skills/everything-claude-code/` - curated local copies of essential skills
   from `affaan-m/everything-claude-code`
+- `skills/stitch-skills/` - local copies of Google Stitch skills for
+  AI-assisted frontend design and Stitch-to-React workflows
 
 ## Behavior
 
@@ -40,3 +42,15 @@ Pinned source commit:
 
 The copied upstream license is available at
 `skills/everything-claude-code/LICENSE`.
+
+The Stitch skill files under `skills/stitch-skills/` come from:
+
+https://github.com/google-labs-code/stitch-skills
+
+Pinned source commit:
+
+```text
+6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140
+```
+
+The copied upstream license is available at `skills/stitch-skills/LICENSE`.

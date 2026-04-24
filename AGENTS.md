@@ -163,12 +163,13 @@ Required output:
 
 ## Curated Skill Stack
 
-Use this curated subset from
-`https://github.com/affaan-m/everything-claude-code`. Do not load the whole
-repository into context. Treat these as skill references to activate only when
-their trigger matches the task.
+Use the curated subsets below. Do not load whole upstream repositories into
+context. Treat these as skill references to activate only when their trigger
+matches the task.
 
-Local readable copies live in `skills/everything-claude-code/<skill>/SKILL.md`.
+Local readable copies live in:
+- `skills/everything-claude-code/<skill>/SKILL.md`
+- `skills/stitch-skills/<skill>/SKILL.md`
 
 ### Team-Level Skills
 
@@ -223,6 +224,20 @@ Local readable copies live in `skills/everything-claude-code/<skill>/SKILL.md`.
   fetching, routing, and performance.
 - `accessibility`: Use for WCAG 2.2 AA semantics, keyboard behavior, focus,
   labels, contrast, and responsive accessibility.
+- `stitch-design`: Use when the user asks for AI-generated UI design, high
+  fidelity screens, design prompt enhancement, or Stitch MCP design/edit flows.
+- `taste-design`: Use with Stitch design work when the requested frontend needs
+  a stronger opinionated design system and anti-generic AI design constraints.
+- `enhance-prompt`: Use to turn rough UI ideas into Stitch-optimized prompts
+  before generating or editing screens.
+- `design-md`: Use to create or update `.stitch/DESIGN.md` from existing Stitch
+  projects or screenshots.
+- `react:components`: Use when converting Stitch screens into React/Vite
+  components and design-token-consistent frontend code.
+- `stitch-loop`: Use when the user asks Stitch to generate a complete
+  multi-page website from one prompt.
+- `shadcn-ui`: Use when integrating Stitch-generated React work with shadcn/ui
+  components in a React app.
 - `browser-qa`: Use after building UI to verify real interactions, screenshots,
   responsive behavior, console/network errors, and accessibility.
 
@@ -234,6 +249,8 @@ Local readable copies live in `skills/everything-claude-code/<skill>/SKILL.md`.
   flaky-test strategy.
 - `browser-qa`: Use for live UI smoke tests, interaction tests, visual checks,
   responsive checks, and accessibility checks.
+- `react:components`: Use the bundled validation workflow after converting
+  Stitch screens into React components.
 - `ai-regression-testing`: Use after AI-authored backend/API changes or bug
   fixes to prevent repeated blind spots.
 - `verification-loop`: Use as the final build/type/lint/test/security/diff
@@ -251,10 +268,26 @@ Local readable copies live in `skills/everything-claude-code/<skill>/SKILL.md`.
 - `council`: Use when the final recommendation depends on a real tradeoff, not
   a deterministic test result.
 
+### Stitch Skill Stack
+
+Use this curated subset from
+`https://github.com/google-labs-code/stitch-skills` for AI-assisted frontend
+design. Prefer the Stitch skills only when the task explicitly involves design
+generation, prompt enhancement, Stitch MCP screens, or converting Stitch output
+into frontend code.
+
+Do not assume the Stitch MCP server is available. If a workflow requires Stitch
+MCP and no Stitch tools are configured in the harness, state that limitation and
+continue with the local design prompt, `.stitch/DESIGN.md`, or React conversion
+steps that can be done from available files.
+
 ### Excluded By Design
 
 - Framework-specific skills, release/infrastructure skills, benchmarking
   skills, and skill-audit/meta skills are intentionally not copied here.
+- Exception: `shadcn-ui` is included only as part of the Stitch frontend design
+  integration and should be used only when the target React project uses or
+  requests shadcn/ui.
 - Add an excluded skill later only when repo evidence proves it is needed for
   the current task or stack.
 
