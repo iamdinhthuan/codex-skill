@@ -31,6 +31,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Push Stitch integration to GitHub | Created branch `codex/add-stitch-skills`, committed `a45a4bc`, pushed to origin, and opened draft PR #1. | `git push -u origin codex/add-stitch-skills`; `gh pr create --draft`. |
 | Done | Install team and Stitch skills globally for all local Codex projects | Copied curated skills into `~/.codex/skills/everything-claude-code` and Stitch skills into `~/.codex/skills/stitch-skills`; appended global team/Stitch instructions to `~/.codex/AGENTS.md`. | Verified 23 curated skills and 8 Stitch skills exist globally. |
 | Done | Add durable work log for future conversations | Added this file so future sessions can quickly inspect completed, active, pending, blocked, and skipped work. | Created in `2c873e1`, marked complete in `7b32541`, and pushed to PR #1. |
+| Done | Add global bootstrap for new projects | Added global templates for `docs/WORKLOG.md` and project `AGENTS.md`, plus `~/.codex/bin/codex-bootstrap-project`; updated global `~/.codex/AGENTS.md` to create project work logs when meaningful work starts. | Tested bootstrap against `/tmp/codex-bootstrap-test`; it created `AGENTS.md` and `docs/WORKLOG.md`. |
 
 ## Decisions
 
@@ -38,6 +39,8 @@ finishes, changes direction, or leaves follow-up work.
   project. New projects should inherit this automatically.
 - Use project-level `AGENTS.md` only for project-specific rules, commands,
   architecture constraints, or domain context.
+- Bootstrap `docs/WORKLOG.md` automatically for meaningful work in new projects
+  so task state survives across conversations.
 - Keep vendored skill sources under `skills/` with source attribution and pinned
   commits. Do not silently replace them with floating upstream content.
 - Do not assume Stitch MCP is available. If MCP tools are missing, continue with

@@ -11,6 +11,8 @@ real code when requested, verify the result, and report only the useful output.
 
 - `AGENTS.md` - main Codex team operating prompt
 - `SKILL.md` - compact surgical-coding guideline skill
+- `docs/GLOBAL_BOOTSTRAP.md` - how global Codex instructions, skills, and
+  project work logs are bootstrapped into new projects
 - `docs/WORKLOG.md` - durable task memory for completed, active, pending,
   blocked, and skipped work
 - `skills/everything-claude-code/` - curated local copies of essential skills
