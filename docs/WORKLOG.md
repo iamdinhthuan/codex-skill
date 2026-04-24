@@ -30,7 +30,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Document Stitch source attribution | Updated `README.md` with upstream repo, pinned commit `6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140`, and license path. | Reviewed README diff. |
 | Done | Push Stitch integration to GitHub | Created branch `codex/add-stitch-skills`, committed `a45a4bc`, pushed to origin, and opened draft PR #1. | `git push -u origin codex/add-stitch-skills`; `gh pr create --draft`. |
 | Done | Install team and Stitch skills globally for all local Codex projects | Copied curated skills into `~/.codex/skills/everything-claude-code` and Stitch skills into `~/.codex/skills/stitch-skills`; appended global team/Stitch instructions to `~/.codex/AGENTS.md`. | Verified 23 curated skills and 8 Stitch skills exist globally. |
-| Done | Add durable work log for future conversations | Added this file so future sessions can quickly inspect completed, active, pending, blocked, and skipped work. | Committed `2c873e1` and pushed to PR #1. |
+| Done | Add durable work log for future conversations | Added this file so future sessions can quickly inspect completed, active, pending, blocked, and skipped work. | Created in `2c873e1`, marked complete in `7b32541`, and pushed to PR #1. |
 
 ## Decisions
 
