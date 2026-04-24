@@ -34,7 +34,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Add global bootstrap for new projects | Added global templates for `docs/WORKLOG.md` and project `AGENTS.md`, plus `~/.codex/bin/codex-bootstrap-project`; updated global `~/.codex/AGENTS.md` to create project work logs when meaningful work starts. | Tested bootstrap against `/tmp/codex-bootstrap-test`; it created `AGENTS.md` and `docs/WORKLOG.md`. |
 | Done | Rename and review Codex skill bundle | Renamed the curated `everything-claude-code` bundle to `codex-team-skills`, adapted Claude-specific runtime assumptions for Codex, synced the global skill install, and added `docs/SKILL_REVIEW.md`. | Commit `f03ec89`; `git diff --check`; verified 23 repo skills and 23 global skills; `rg` found no stale Claude runtime references outside the review report/source attribution. |
 | Done | Document client setup and usage | Added client-machine setup docs, source-controlled global instructions, project templates, and bootstrap script so another machine can install and verify the same Codex workflow. | Verified install commands in `/tmp/codex-client-install-test`; counts: 23 Codex team skills, 8 Stitch skills; `git diff --check`. |
-| In Progress | Push branch into main | Verify this machine's global setup, commit the merge note, push `codex/add-stitch-skills`, then fast-forward remote `main` from the branch. | Pending push to `main`. |
+| Done | Push branch into main | Verified this machine's global setup, pushed `codex/add-stitch-skills`, then fast-forwarded remote `main` from the branch. | `git push origin codex/add-stitch-skills:main` updated `main` from `482d251` to `72dbbbc`. |
 
 ## Decisions
 
