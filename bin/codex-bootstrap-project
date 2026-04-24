@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_dir="${1:-$(pwd)}"
+template_dir="${CODEX_HOME:-$HOME/.codex}/templates"
+
+mkdir -p "$project_dir/docs"
+
+if [ ! -f "$project_dir/docs/WORKLOG.md" ]; then
+  cp "$template_dir/PROJECT_WORKLOG.md" "$project_dir/docs/WORKLOG.md"
+  echo "created docs/WORKLOG.md"
+fi
+
+if [ ! -f "$project_dir/AGENTS.md" ]; then
+  cp "$template_dir/PROJECT_AGENTS.md" "$project_dir/AGENTS.md"
+  echo "created AGENTS.md"
+fi

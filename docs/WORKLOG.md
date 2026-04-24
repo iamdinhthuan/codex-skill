@@ -33,6 +33,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Add durable work log for future conversations | Added this file so future sessions can quickly inspect completed, active, pending, blocked, and skipped work. | Created in `2c873e1`, marked complete in `7b32541`, and pushed to PR #1. |
 | Done | Add global bootstrap for new projects | Added global templates for `docs/WORKLOG.md` and project `AGENTS.md`, plus `~/.codex/bin/codex-bootstrap-project`; updated global `~/.codex/AGENTS.md` to create project work logs when meaningful work starts. | Tested bootstrap against `/tmp/codex-bootstrap-test`; it created `AGENTS.md` and `docs/WORKLOG.md`. |
 | Done | Rename and review Codex skill bundle | Renamed the curated `everything-claude-code` bundle to `codex-team-skills`, adapted Claude-specific runtime assumptions for Codex, synced the global skill install, and added `docs/SKILL_REVIEW.md`. | Commit `f03ec89`; `git diff --check`; verified 23 repo skills and 23 global skills; `rg` found no stale Claude runtime references outside the review report/source attribution. |
+| Done | Document client setup and usage | Added client-machine setup docs, source-controlled global instructions, project templates, and bootstrap script so another machine can install and verify the same Codex workflow. | Verified install commands in `/tmp/codex-client-install-test`; counts: 23 Codex team skills, 8 Stitch skills; `git diff --check`. |
 
 ## Decisions
 

@@ -7,7 +7,9 @@ workflow, skill stack, Stitch frontend design rules, and task memory behavior.
 ## What Loads Automatically
 
 Codex reads `~/.codex/AGENTS.md` as global guidance. New projects do not need to
-copy this repo's `AGENTS.md` to receive the shared behavior.
+copy this repo's project `AGENTS.md` to receive the shared behavior. Client
+machines should install `global/AGENTS.md` from this repo as
+`~/.codex/AGENTS.md`.
 
 Global skills are installed at:
 
