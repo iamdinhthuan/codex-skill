@@ -11,7 +11,7 @@ copy this repo's `AGENTS.md` to receive the shared behavior.
 
 Global skills are installed at:
 
-- `~/.codex/skills/everything-claude-code/`
+- `~/.codex/skills/codex-team-skills/`
 - `~/.codex/skills/stitch-skills/`
 
 These skills should be loaded only when their trigger matches the current task.

@@ -13,10 +13,12 @@ real code when requested, verify the result, and report only the useful output.
 - `SKILL.md` - compact surgical-coding guideline skill
 - `docs/GLOBAL_BOOTSTRAP.md` - how global Codex instructions, skills, and
   project work logs are bootstrapped into new projects
+- `docs/SKILL_REVIEW.md` - review notes for each vendored skill and its
+  Codex-specific adaptations
 - `docs/WORKLOG.md` - durable task memory for completed, active, pending,
   blocked, and skipped work
-- `skills/everything-claude-code/` - curated local copies of essential skills
-  from `affaan-m/everything-claude-code`
+- `skills/codex-team-skills/` - Codex-adapted curated local copies of
+  essential skills from `affaan-m/everything-claude-code`
 - `skills/stitch-skills/` - local copies of Google Stitch skills for
   AI-assisted frontend design and Stitch-to-React workflows
 
@@ -34,7 +36,7 @@ they are needed.
 
 ## Source Attribution
 
-The curated skill files under `skills/everything-claude-code/` come from:
+The curated skill files under `skills/codex-team-skills/` are adapted from:
 
 https://github.com/affaan-m/everything-claude-code
 
@@ -45,7 +47,7 @@ Pinned source commit:
 ```
 
 The copied upstream license is available at
-`skills/everything-claude-code/LICENSE`.
+`skills/codex-team-skills/LICENSE`.
 
 The Stitch skill files under `skills/stitch-skills/` come from:
 

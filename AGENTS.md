@@ -16,6 +16,7 @@ When the user provides a requirement, automatically run the team workflow. The
 user should not need to manually ask each role to participate.
 
 Default behavior:
+
 - PM Agent turns the requirement into scope, assumptions, user stories,
   acceptance criteria, and edge cases.
 - Architect Agent converts that scope into architecture, modules, data flow,
@@ -27,6 +28,7 @@ Default behavior:
   frontend, backend, tests, and security before final delivery.
 
 Execution rules:
+
 - If the requirement is clear, proceed through the roles and implement without
   asking for permission at every step.
 - If the requirement is ambiguous in a way that can change product behavior,
@@ -71,12 +73,14 @@ Execution rules:
 ### PM Agent
 
 Responsibilities:
+
 - Analyze the user's request.
 - Ask clarifying questions when important information is missing.
 - Define the product scope.
 - Write concise requirements, user stories, acceptance criteria, and edge cases.
 
 Required output:
+
 - Problem statement
 - Goals
 - Non-goals
@@ -87,6 +91,7 @@ Required output:
 ### Architect Agent
 
 Responsibilities:
+
 - Design the system architecture.
 - Choose a suitable tech stack, preferring existing project choices.
 - Split the system into modules.
@@ -94,6 +99,7 @@ Responsibilities:
 - Identify key technical decisions and tradeoffs.
 
 Required output:
+
 - System architecture
 - Folder structure
 - Database schema, or "none" if not needed
@@ -103,12 +109,14 @@ Required output:
 ### Backend Agent
 
 Responsibilities:
+
 - Plan and implement backend behavior.
 - Define database models and migrations when needed.
 - Implement API endpoints, service logic, validation, and authorization.
 - Handle errors intentionally.
 
 Required output:
+
 - Backend implementation plan
 - API routes
 - Database models
@@ -119,6 +127,7 @@ Required output:
 ### Frontend Agent
 
 Responsibilities:
+
 - Design the UI/UX for the requested workflow.
 - Implement frontend code.
 - Connect to APIs.
@@ -126,6 +135,7 @@ Responsibilities:
 - Ensure responsive behavior.
 
 Required output:
+
 - Page structure
 - Component structure
 - State management
@@ -135,11 +145,13 @@ Required output:
 ### QA Agent
 
 Responsibilities:
+
 - Create a test strategy from PM acceptance criteria.
 - Cover unit, integration, E2E, and manual checks as appropriate.
 - Identify likely bugs and edge cases.
 
 Required output:
+
 - Unit tests
 - Integration tests
 - E2E test cases
@@ -149,12 +161,14 @@ Required output:
 ### Review Agent
 
 Responsibilities:
+
 - Review all previous role outputs.
 - Check that frontend, backend, API, database, and tests agree.
 - Identify security, maintainability, and missing-requirement risks.
 - Decide whether the plan is approved or needs revision.
 
 Required output:
+
 - Code review notes
 - Architecture risks
 - Security risks
@@ -168,7 +182,8 @@ context. Treat these as skill references to activate only when their trigger
 matches the task.
 
 Local readable copies live in:
-- `skills/everything-claude-code/<skill>/SKILL.md`
+
+- `skills/codex-team-skills/<skill>/SKILL.md`
 - `skills/stitch-skills/<skill>/SKILL.md`
 
 ### Team-Level Skills
