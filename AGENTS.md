@@ -10,6 +10,12 @@ full team flow for product, feature, architecture, or implementation requests.
 For tiny tasks, still apply the same roles mentally, but keep the visible output
 short and proportional.
 
+This repository is the source-controlled reference implementation for the shared
+Codex team workflow. Keep behavior changes mirrored in `global/AGENTS.md` and
+the installed global runtime under `~/.codex/AGENTS.md`. Client projects should
+normally inherit the shared behavior from `~/.codex/AGENTS.md` and keep their
+project `AGENTS.md` focused on local rules using `templates/PROJECT_AGENTS.md`.
+
 ## Auto Team Execution Mode
 
 When the user provides a requirement, automatically run the team workflow. The
@@ -36,11 +42,113 @@ Execution rules:
   questions.
 - If the user does not answer, continue with explicit assumptions.
 - For planning requests, show the full team output template.
-- For implementation requests, keep the visible plan concise, make real file
-  changes, verify them, and summarize the result.
+- For implementation requests, keep the visible plan concise. When the harness
+  supports subagents and the work is not tiny or single-file, run review and
+  discovery specialists read-only first, then assign writing implementation
+  agents by exclusive file ownership. The main agent should orchestrate, merge,
+  resolve conflicts, verify, and update `docs/WORKLOG.md`; it should only code
+  shared, conflict-prone, or explicitly unassigned files.
 - If the harness supports actual subagents and the user asks for parallel or
-  multi-agent execution, split independent work by role or file ownership and
-  merge through Review Agent.
+  multi-agent execution, or the work has independent role slices, split
+  independent work by role or file ownership and merge through Review Agent.
+
+## Specialist Subagent Routing
+
+Use logical team roles inside the main thread for small, sequential, or tightly
+coupled work. Use real specialist subagents automatically when the user asks for
+multi-agent, parallel, delegated, or role-split execution, when project
+instructions explicitly require specialist subagents, or when the task has
+independent slices that can run without blocking each other.
+
+Spawn specialist subagents when at least one of these is true:
+
+- The user asks for "multi-agent", "parallel agents", "subagents", "BE/FE
+  agents", "PM agent", "architect agent", "QA agent", "review agent", or
+  equivalent wording.
+- PM, Architect, Backend, Frontend, QA, Review, or Stitch design work can be
+  separated by file ownership or read-only investigation.
+- The task crosses API, UI, and verification surfaces and would mix unrelated
+  concerns in one thread.
+- An isolated review, test, exploration, or design pass can run while the main
+  agent continues integration work.
+
+Do not spawn subagents for tiny edits, single-file fixes, quick explanations,
+pure command output, or work where the next main action depends immediately on
+the subagent result.
+
+Specialist mapping:
+
+- PM -> `pm` agent; skills: `product-lens`, `product-capability`, `council`
+  as relevant.
+- Architect -> `architect` agent; skills: `api-design`,
+  `hexagonal-architecture`, `database-migrations`, `documentation-lookup`,
+  `gateguard` as relevant.
+- Backend -> `backend` agent; skills: `backend-patterns`, `api-design`,
+  `database-migrations`, `security-review`, `tdd-workflow` as relevant.
+- Frontend -> `frontend` agent; skills: `frontend-design`,
+  `frontend-patterns`, `accessibility`, `browser-qa` as relevant.
+- Stitch frontend design -> `stitch-frontend` agent; skills:
+  `stitch-design`, `enhance-prompt`, `taste-design`, `design-md`,
+  `react:components` (skill ID; vendored at
+  `skills/stitch-skills/react-components/`), `stitch-loop`, `shadcn-ui`,
+  `browser-qa` as relevant.
+- QA -> `qa` agent; skills: `tdd-workflow`, `e2e-testing`, `browser-qa`,
+  `ai-regression-testing`, `verification-loop` as relevant.
+- Review -> `review` agent; skills: `coding-standards`, `security-review`,
+  `verification-loop`, `gateguard`, `council` as relevant.
+
+When spawning multiple specialists for implementation, use this sequence:
+
+1. First spawn PM, Architect, QA, Review, or exploration specialists as
+   read-only when their discovery can de-risk the change.
+2. After the read-only handoffs, spawn Backend, Frontend, Stitch frontend, or
+   other implementation specialists as writing agents with exclusive file
+   ownership for their slices.
+3. The main agent orchestrates the plan, assigns ownership, merges handoffs,
+   resolves conflicts, runs final verification, and updates `docs/WORKLOG.md`.
+   It should not directly code implementation slices assigned to writing
+   specialists.
+4. After Backend, Frontend, Stitch frontend, or other writing agents finish,
+   the main agent must collect their handoffs and run a QA verification pass
+   against the PM acceptance criteria and changed behavior before final Review.
+
+When spawning multiple specialists, give each one disjoint file ownership or a
+read-only question, state that other agents may be working in parallel, and ask
+for a concise handoff with changed files, checks, risks, and blockers.
+
+- Assign each writing subagent exclusive file ownership before spawning it.
+- If ownership is unclear or a file is shared across slices, keep the subagent
+  read-only for that file and return a recommendation instead of editing.
+- The main agent is the single writer for shared contracts, final merges, and
+  conflict-prone files such as `AGENTS.md`, `docs/WORKLOG.md`, shared API or
+  schema contracts, and lockfiles unless explicit ownership is assigned.
+
+### QA Repair Loop
+
+Use this loop for non-trivial implementation that involves Backend, Frontend,
+Stitch frontend, or other writing agents:
+
+1. Writing agents return changed files, contract decisions, checks they ran,
+   risks, and blockers.
+2. The main agent merges handoffs, resolves conflicts, and gives QA the PM
+   acceptance criteria, architecture/API contract, changed files, and claimed
+   verification.
+3. QA runs focused verification: tests, builds, browser checks, E2E flows,
+   regression checks, or manual checks appropriate to the change.
+4. If QA finds bugs, regressions, contract mismatches, or missing coverage, the
+   main agent routes each finding back to the owning implementation agent with
+   the failing command, observed behavior, expected behavior, and affected file
+   ownership.
+5. The owning Backend, Frontend, Stitch frontend, or other implementation agent
+   fixes only its assigned files and returns a new handoff. Shared contracts,
+   lockfiles, and conflict-prone files stay with the main agent unless
+   ownership is explicitly reassigned.
+6. QA re-runs the failed checks and any adjacent regression checks. Repeat the
+   repair loop up to 3 focused cycles, then either pass to Review or mark the
+   task Blocked with the remaining failure, attempted fixes, and next decision.
+7. Review runs after QA passes or after the main agent explicitly documents why
+   verification cannot pass. Final delivery must state which checks ran, what
+   failed if anything, and any residual risk.
 
 ## Operating Principles
 
@@ -248,7 +356,9 @@ Local readable copies live in:
 - `design-md`: Use to create or update `.stitch/DESIGN.md` from existing Stitch
   projects or screenshots.
 - `react:components`: Use when converting Stitch screens into React/Vite
-  components and design-token-consistent frontend code.
+  components and design-token-consistent frontend code. The skill ID is
+  `react:components`; the vendored repo folder is
+  `skills/stitch-skills/react-components/`.
 - `stitch-loop`: Use when the user asks Stitch to generate a complete
   multi-page website from one prompt.
 - `shadcn-ui`: Use when integrating Stitch-generated React work with shadcn/ui
@@ -265,7 +375,8 @@ Local readable copies live in:
 - `browser-qa`: Use for live UI smoke tests, interaction tests, visual checks,
   responsive checks, and accessibility checks.
 - `react:components`: Use the bundled validation workflow after converting
-  Stitch screens into React components.
+  Stitch screens into React components. This refers to the skill ID
+  `react:components` in `skills/stitch-skills/react-components/`.
 - `ai-regression-testing`: Use after AI-authored backend/API changes or bug
   fixes to prevent repeated blind spots.
 - `verification-loop`: Use as the final build/type/lint/test/security/diff
@@ -329,6 +440,8 @@ repository directly.
 - QA Agent must test against PM Agent's acceptance criteria.
 - Review Agent must check for conflicts across requirements, API, data model,
   UI, and tests.
+- Only one writing agent may own a given file at a time; shared or ambiguous
+  files stay with the main agent unless ownership is reassigned explicitly.
 - Any agent may challenge an earlier output, but must state the conflict and
   the proposed correction.
 

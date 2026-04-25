@@ -25,6 +25,10 @@ finishes, changes direction, or leaves follow-up work.
 
 | Status | Task | Notes | Verification |
 | --- | --- | --- | --- |
+| Done | Add QA repair loop after BE/FE handoff | Tightened repo/global orchestration so QA verifies Backend/Frontend/Stitch implementation handoffs, routes failures back through the main agent to the owning implementation agent, and repeats focused repair checks up to 3 cycles before Review or Blocked status. | Updated `AGENTS.md`, `global/AGENTS.md`, `docs/CLIENT_SETUP.md`, and `docs/GLOBAL_BOOTSTRAP.md`; synced runtime with `bin/sync-codex-runtime ~/.codex`; `diff -q global/AGENTS.md ~/.codex/AGENTS.md`; `git diff --check`; `rg` confirmed QA Repair Loop in source and runtime prompts. |
+| Done | Add reusable runtime sync helper | Added `bin/sync-codex-runtime` to install shared global AGENTS, specialist agent TOML files, skill bundles, templates, and helper scripts into `CODEX_HOME` or `~/.codex`; updated setup/bootstrap docs to use the helper. | Verified against a temporary `CODEX_HOME` with expected file counts (23 Codex team skills, 8 Stitch skills), then synced to `~/.codex` and confirmed source/runtime parity with `diff -q`; `git diff --check` passed. |
+| Done | Review and sync global agent runtime | Re-reviewed the full agent stack across `global/AGENTS.md`, `global/agents/*.toml`, `~/.codex/AGENTS.md`, `~/.codex/agents/*.toml`, and `~/.codex/config.toml`; then re-synced the source-controlled global files and `team-builder` skill into `~/.codex`. | `diff -q` matched all synced source/runtime file pairs; runtime role config in `~/.codex/config.toml` still points to the expected specialist TOML files. |
+| Done | Tighten AGENTS/subagent routing guidance | Clarified that this repo is the source-controlled workflow reference, documented `react:components` as the canonical skill ID with `react-components/` folder mapping, added single-writer file ownership rules, and synced the installed global/runtime prompts. | Reviewed updated `AGENTS.md`, `global/AGENTS.md`, `skills/codex-team-skills/team-builder/SKILL.md`, and synced runtime files under `~/.codex`. |
 | Done | Add Google Stitch skills to the repo | Vendored upstream `google-labs-code/stitch-skills` into `skills/stitch-skills/` with README and LICENSE attribution. | Compared copied files with upstream checkout; only local root README/LICENSE additions differ. |
 | Done | Integrate Stitch into Frontend Agent workflow | Updated `AGENTS.md` with triggers for `stitch-design`, `taste-design`, `enhance-prompt`, `design-md`, `react:components`, `stitch-loop`, and `shadcn-ui`. | `rg` checks confirmed Stitch references in `AGENTS.md`. |
 | Done | Document Stitch source attribution | Updated `README.md` with upstream repo, pinned commit `6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140`, and license path. | Reviewed README diff. |
@@ -35,6 +39,9 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Rename and review Codex skill bundle | Renamed the curated `everything-claude-code` bundle to `codex-team-skills`, adapted Claude-specific runtime assumptions for Codex, synced the global skill install, and added `docs/SKILL_REVIEW.md`. | Commit `f03ec89`; `git diff --check`; verified 23 repo skills and 23 global skills; `rg` found no stale Claude runtime references outside the review report/source attribution. |
 | Done | Document client setup and usage | Added client-machine setup docs, source-controlled global instructions, project templates, and bootstrap script so another machine can install and verify the same Codex workflow. | Verified install commands in `/tmp/codex-client-install-test`; counts: 23 Codex team skills, 8 Stitch skills; `git diff --check`. |
 | Done | Push branch into main | Verified this machine's global setup, pushed `codex/add-stitch-skills`, then fast-forwarded remote `main` from the branch. | `git push origin codex/add-stitch-skills:main` updated `main` from `482d251` to `72dbbbc`. |
+| Done | Add specialist subagent routing config | Added specialist subagent routing rules to repo/global instructions; added source-controlled `global/agents/*.toml`; synced `backend`, `frontend`, `qa`, `review`, and `stitch-frontend` named agents into `~/.codex/config.toml` and `~/.codex/agents/`; updated client/bootstrap docs. | `tomllib` parsed `~/.codex/config.toml` and agent TOML files; `rg` confirmed config references; `git diff --check` passed. |
+| Done | Complete full-role Codex subagent setup | Clarified automatic spawning for independent role slices; removed stale root `SKILL.md` reference from README; added `pm` and `architect` named specialist TOML files; updated sync helper, client setup docs, global bootstrap docs, team-builder wording, `~/.codex/AGENTS.md`, `~/.codex/agents/`, and `~/.codex/config.toml`. | Verified by reading source/runtime routing guidance, confirming `pm` and `architect` exist under both `global/agents/` and `~/.codex/agents/`, confirming `~/.codex/config.toml` has all seven role entries, and searching for stale README/root `SKILL.md` and old role-list wording. A combined shell verification command was canceled before completion. |
+| Done | Enforce staged multi-agent implementation flow | Updated source and global instructions so non-trivial implementation uses read-only review/discovery agents first, writing implementation agents second with exclusive file ownership, and the main agent as orchestrator/merger/verifier except for shared, conflict-prone, or explicitly unassigned files. | Reviewed updated `AGENTS.md`, `global/AGENTS.md`, `docs/GLOBAL_BOOTSTRAP.md`, and `docs/CLIENT_SETUP.md`; synced runtime via `bin/sync-codex-runtime ~/.codex`. |
 
 ## Decisions
 
@@ -48,6 +55,15 @@ finishes, changes direction, or leaves follow-up work.
   commits. Do not silently replace them with floating upstream content.
 - Do not assume Stitch MCP is available. If MCP tools are missing, continue with
   local prompt/design-system/React conversion work that can be done from files.
+- Use real specialist subagents automatically when the user asks for
+  multi-agent, parallel, delegated, or role-split execution, when project
+  instructions explicitly require specialist subagents, or when independent
+  PM/Architect/BE/FE/QA/Review/Stitch slices can run without blocking each
+  other. For non-trivial implementation, review/discovery agents run read-only
+  first, implementation agents write second with exclusive file ownership, and
+  the main agent orchestrates, merges, resolves conflicts, verifies, and updates
+  the work log. Otherwise keep small tasks in the main thread with logical team
+  roles.
 - Keep unrelated worktree changes out of commits. The current `SKILL.md`
   deletion remains outside the Stitch branch commit scope.
 

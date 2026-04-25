@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_dir="$(cd -- "$script_dir/.." && pwd)"
+codex_home="${1:-${CODEX_HOME:-$HOME/.codex}}"
+
+mkdir -p \
+  "$codex_home" \
+  "$codex_home/agents" \
+  "$codex_home/bin" \
+  "$codex_home/skills" \
+  "$codex_home/templates"
+
+install -m 644 "$repo_dir/global/AGENTS.md" "$codex_home/AGENTS.md"
+install -m 644 "$repo_dir/global/agents/pm.toml" "$codex_home/agents/pm.toml"
+install -m 644 "$repo_dir/global/agents/architect.toml" "$codex_home/agents/architect.toml"
+install -m 644 "$repo_dir/global/agents/backend.toml" "$codex_home/agents/backend.toml"
+install -m 644 "$repo_dir/global/agents/frontend.toml" "$codex_home/agents/frontend.toml"
+install -m 644 "$repo_dir/global/agents/qa.toml" "$codex_home/agents/qa.toml"
+install -m 644 "$repo_dir/global/agents/review.toml" "$codex_home/agents/review.toml"
+install -m 644 "$repo_dir/global/agents/stitch-frontend.toml" "$codex_home/agents/stitch-frontend.toml"
+
+rm -rf "$codex_home/skills/codex-team-skills" "$codex_home/skills/stitch-skills"
+cp -R "$repo_dir/skills/codex-team-skills" "$codex_home/skills/codex-team-skills"
+cp -R "$repo_dir/skills/stitch-skills" "$codex_home/skills/stitch-skills"
+
+install -m 644 "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/PROJECT_WORKLOG.md"
+install -m 644 "$repo_dir/templates/PROJECT_AGENTS.md" "$codex_home/templates/PROJECT_AGENTS.md"
+install -m 755 "$repo_dir/bin/codex-bootstrap-project" "$codex_home/bin/codex-bootstrap-project"
+install -m 755 "$repo_dir/bin/sync-codex-runtime" "$codex_home/bin/sync-codex-runtime"
+
+echo "synced Codex runtime to $codex_home"

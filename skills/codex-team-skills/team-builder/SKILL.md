@@ -8,6 +8,12 @@ origin: community
 
 Interactive menu for browsing and composing agent teams on demand. Works with flat or domain-subdirectory agent collections.
 
+In Codex installs that use named specialist roles, runtime-owned subagents may be
+configured in `~/.codex/config.toml` and `~/.codex/agents/*.toml`. Markdown
+agent files remain useful for ad-hoc personas, but they are not required for the
+built-in PM, Architect, Backend, Frontend, QA, Review, or Stitch specialist
+flow.
+
 ## When to Use
 
 - You have multiple agent personas (markdown files) and want to pick which ones to use for a task
@@ -47,20 +53,26 @@ agents/
 
 ## Configuration
 
-Agents are discovered from markdown files, merged and deduplicated by agent name:
+Agents are discovered from runtime-defined roles plus optional markdown persona
+files, merged and deduplicated by agent name:
 
-1. **Project files** — read agent markdown files from:
+1. **Named specialist roles** — read configured runtime roles from
+   `~/.codex/config.toml`. Their prompts normally live in `~/.codex/agents/*.toml`.
+2. **Project persona files** — read agent markdown files from:
    - `./agents/**/*.md` + `./agents/*.md` — project-local agents
-   - `~/.codex/agents/**/*.md` + `~/.codex/agents/*.md` — global user agents
-2. **Skill-defined roles** — when no markdown agents exist, use the built-in team roles from the repo `AGENTS.md` as selectable role prompts.
+   - `~/.codex/agents/**/*.md` + `~/.codex/agents/*.md` — optional global user personas
+3. **Skill-defined roles** — when no runtime roles or markdown agents exist, use the built-in team roles from the repo `AGENTS.md` as selectable role prompts.
 
-Earlier sources take precedence when names collide: project agents > global agents > built-in role prompts. A custom path can be used instead if the user specifies one.
+Earlier sources take precedence when names collide: project agents > global markdown agents > named runtime roles > built-in role prompts. A custom path can be used instead if the user specifies one.
 
 ## How It Works
 
 ### Step 1: Discover Available Agents
 
-Read available agent files from `./agents/` and `~/.codex/agents/`. If no files exist, offer the built-in Codex team roles from `AGENTS.md`: PM, Architect, Backend, Frontend, QA, and Review.
+Read configured named roles from `~/.codex/config.toml` first. Then read
+optional markdown persona files from `./agents/` and `~/.codex/agents/`. If no
+runtime roles or markdown personas exist, offer the built-in Codex team roles
+from `AGENTS.md`: PM, Architect, Backend, Frontend, QA, and Review.
 
 For user agents loaded from markdown files:
 - **Subdirectory layout:** extract the domain from the parent folder name
@@ -68,7 +80,15 @@ For user agents loaded from markdown files:
 - Extract the agent name from the first `# Heading`. If no heading is found, derive the name from the filename (strip `.md`, replace hyphens with spaces, title-case)
 - Extract a one-line summary from the first paragraph after the heading
 
-If no markdown agents and no usable built-in role prompts are available, inform the user: "No agents found. Add markdown files under `./agents/` or `~/.codex/agents/`, or use the default team workflow." Then stop.
+For runtime-defined specialist roles loaded from config:
+- Use the configured agent name as the selectable role label.
+- Use the config description or a short summary from the role prompt as the one-line description.
+- Treat the owning `.toml` file as runtime configuration, not as a markdown persona source.
+
+If no runtime roles, no markdown agents, and no usable built-in role prompts are
+available, inform the user: "No agents found. Configure named roles in
+`~/.codex/config.toml`, add markdown files under `./agents/` or
+`~/.codex/agents/`, or use the default team workflow." Then stop.
 
 ### Step 2: Present Domain Menu
 
@@ -101,11 +121,13 @@ What should they work on? (describe the task):
 
 ### Step 4: Spawn Agents in Parallel
 
-1. Read each selected agent's markdown file
-2. Prompt for the task description if not already provided
+1. Read each selected agent's runtime config or markdown persona source.
+2. Prompt for the task description if not already provided.
 3. Spawn all agents in parallel using Codex subagents only when the user explicitly requested multi-agent or parallel execution:
-   - use the available `spawn_agent` worker/explorer role that best matches the task
-   - prompt with `"{agent file content}\n\nTask: {task description}"`
+   - use the named specialist role that best matches the task when it exists
+   - otherwise use the available general worker or explorer role with the selected persona prompt
+   - prompt with `"{selected agent instructions}\n\nTask: {task description}"`
+   - assign disjoint file ownership before spawning any writing agents; shared files stay with the main agent
    - each agent runs independently — no inter-agent communication needed
 4. If an agent fails (error, timeout, or empty output), note the failure inline (e.g., "Security Engineer: failed — [reason]") and continue with results from agents that succeeded
 
@@ -123,9 +145,11 @@ If only 1 agent was selected, skip synthesis and present the output directly.
 ## Rules
 
 - **Dynamic discovery only.** Never hardcode agent lists. New files in the directory auto-appear in the menu.
+- **Honor runtime roles.** If named specialist roles are configured in `~/.codex/config.toml`, treat them as first-class selectable agents even when no markdown persona files exist.
 - **Max 5 agents per team.** More than 5 produces diminishing returns and excessive token usage. Enforce at selection time.
 - **Parallel dispatch.** All agents run simultaneously when the user explicitly requested multi-agent or parallel execution.
 - **Parallel Codex subagents only.** Use Codex subagents for independent work; do not invent a team-dialogue tool.
+- **Single writer per file.** Do not let two writing agents edit the same file concurrently; keep shared contracts, lockfiles, and final merges with the main agent unless ownership is explicitly reassigned.
 
 ## Examples
 

@@ -42,7 +42,7 @@ name, not a Claude-specific name.
 | `search-first` | Updated | Replaced `~/.claude` paths, Claude skill wording, Context7-only SDK docs, and generic Task call with Codex paths and `spawn_agent` guidance. |
 | `security-review` | OK | Generic security review guidance; no Codex-specific changes needed. |
 | `tdd-workflow` | OK | Generic testing workflow; no Codex-specific changes needed. |
-| `team-builder` | Updated | Replaced `claude agents` discovery with `./agents`, `~/.codex/agents`, and built-in Codex team roles; aligned spawning with Codex subagent constraints. |
+| `team-builder` | Updated | Replaced `claude agents` discovery with runtime roles from `~/.codex/config.toml`, optional personas from `./agents` and `~/.codex/agents`, built-in Codex team roles, and explicit single-writer parallel dispatch rules. |
 | `verification-loop` | Updated | Rebranded from Claude Code sessions to Codex sessions. |
 
 ## Stitch Skills

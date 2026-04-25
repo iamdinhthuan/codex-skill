@@ -12,7 +12,6 @@ real code when requested, verify the result, and report only the useful output.
 - `AGENTS.md` - main Codex team operating prompt
 - `docs/CLIENT_SETUP.md` - how another machine installs and uses this repo as
   its global Codex operating model
-- `SKILL.md` - compact surgical-coding guideline skill
 - `docs/GLOBAL_BOOTSTRAP.md` - how global Codex instructions, skills, and
   project work logs are bootstrapped into new projects
 - `docs/SKILL_REVIEW.md` - review notes for each vendored skill and its
@@ -24,6 +23,8 @@ real code when requested, verify the result, and report only the useful output.
 - `skills/stitch-skills/` - local copies of Google Stitch skills for
   AI-assisted frontend design and Stitch-to-React workflows
 - `global/AGENTS.md` - global Codex instructions copied to `~/.codex/AGENTS.md`
+- `global/agents/` - named specialist subagent config copied to
+  `~/.codex/agents/`
 - `templates/` - project bootstrap templates copied into `~/.codex/templates`
 - `bin/codex-bootstrap-project` - helper script for creating project-local
   `AGENTS.md` and `docs/WORKLOG.md`
