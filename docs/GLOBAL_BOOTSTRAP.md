@@ -81,8 +81,11 @@ entries that point at those files. The intended specialist roles are:
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
 read-only first, implementation agents write second with exclusive file
 ownership, and the main agent orchestrates, merges, verifies, and updates the
-work log. If `mcp_agent_mail` is configured, the agents should use it for
-handoffs, inbox checks, and file reservations.
+work log. QA routes failures back to the owning writer for up to 3 focused
+repair cycles before Review or Blocked. If `mcp_agent_mail` is configured, the
+agents should use it for handoffs, inbox checks, and file reservations. Agents
+should use the registered name and token returned by the mail server because
+requested names may be replaced with canonical names.
 
 ## Project Memory
 

@@ -40,7 +40,9 @@ Rules:
   3. The main agent orchestrates, merges handoffs, resolves conflicts,
      verifies, and updates `docs/WORKLOG.md`.
   4. QA verifies implementation handoffs before final Review. Route failures
-     back to the owning writing agent.
+     back to the owning writing agent with the failing command, observed
+     behavior, expected behavior, and file ownership. Repeat focused repair
+     checks up to 3 cycles before Review or Blocked.
 - Only one writing agent may own a file at a time. Shared contracts,
   `AGENTS.md`, `docs/WORKLOG.md`, lockfiles, and conflict-prone files stay with
   the main agent unless ownership is reassigned explicitly.
@@ -86,9 +88,13 @@ If `mcp_agent_mail` is configured, use it for multi-agent coordination.
 
 - At session start, call `ensure_project` and `register_agent` with this repo's
   absolute path as `project_key`.
+- Use the registered agent name and token returned by the mail server for later
+  sends; requested names may be replaced with canonical names.
 - Before writing, reserve owned files or globs.
 - Use one shared `thread_id` per task.
-- Send handoffs, blockers, QA findings, and review feedback through mail.
+- Send handoffs, blockers, QA findings, and review feedback through mail. If a
+  send is blocked by contact policy, request/accept contact or retry with
+  `auto_contact_if_blocked` when available.
 - Check inbox at phase boundaries and acknowledge messages you consume.
 - If the server is unavailable, continue with normal handoffs in the main
   thread.

@@ -161,7 +161,10 @@ When meaningful work starts, Codex should:
    file ownership back to the owning implementation agent, then have QA re-run
    the focused checks. Repeat up to 3 repair cycles before passing Review or
    marking the task Blocked.
-8. Keep the work log current when task status changes.
+8. When using `mcp_agent_mail`, use the registered name and token returned by
+   the mail server for later sends. If contact policy blocks a handoff, request
+   contact approval or retry with `auto_contact_if_blocked` when available.
+9. Keep the work log current when task status changes.
 
 Manual bootstrap is available:
 
