@@ -30,7 +30,20 @@ bin/sync-codex-runtime ~/.codex
 ## 3. Configure MCP Servers
 
 Codex can use the skills without MCP, but Stitch design generation requires a
-configured Stitch MCP server.
+configured Stitch MCP server. For role-to-role coordination, install and run
+`mcp_agent_mail` too.
+
+Install `mcp_agent_mail`:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
+```
+
+Start the server when you want agent mail enabled:
+
+```bash
+uv run python -m mcp_agent_mail.cli serve-http
+```
 
 Add or verify these entries in `~/.codex/config.toml`:
 
@@ -83,6 +96,9 @@ nickname_candidates = ["Stitch", "Design", "UX"]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest"]
 
+[mcp_servers.mcp_agent_mail]
+url = "http://127.0.0.1:8765/api/"
+
 [mcp_servers.stitch]
 url = "https://stitch.googleapis.com/mcp"
 env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
@@ -108,6 +124,7 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
+grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
 find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
@@ -171,6 +188,8 @@ After updating, rerun the verification commands above.
 - If Codex does not follow the team workflow, verify `~/.codex/AGENTS.md`
   exists and restart the Codex session.
 - If a skill is missing, verify the expected `SKILL.md` counts.
+- If agent-to-agent coordination does not work, verify the local
+  `mcp_agent_mail` server is running on `http://127.0.0.1:8765/api/`.
 - If Stitch generation fails, verify `STITCH_API_KEY` is set and the Stitch MCP
   server is configured.
 - If a project should not create local docs, tell Codex the task is read-only.

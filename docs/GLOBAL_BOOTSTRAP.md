@@ -24,6 +24,27 @@ Global skills are installed at:
 
 These skills should be loaded only when their trigger matches the current task.
 
+## MCP Agent Mail
+
+For role-to-role coordination, install `mcp_agent_mail`:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
+```
+
+Start it when you want mail-based coordination enabled:
+
+```bash
+uv run python -m mcp_agent_mail.cli serve-http
+```
+
+Add this MCP server entry to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.mcp_agent_mail]
+url = "http://127.0.0.1:8765/api/"
+```
+
 ## Specialist Subagents
 
 Codex supports named agent roles through `~/.codex/config.toml`. This repo
@@ -57,23 +78,11 @@ entries that point at those files. The intended specialist roles are:
 - `stitch-frontend` for Stitch design, prompt enhancement, `.stitch/DESIGN.md`,
   and Stitch-to-React work.
 
-The global `AGENTS.md` decides when to spawn real specialists versus keeping
-the roles inside the main thread. Use real subagents for explicit multi-agent
-requests or independent PM/Architect/BE/FE/QA/Review/Stitch work slices. For
-non-trivial implementation, run PM/Architect/QA/Review or exploration agents
-read-only first, then assign Backend/Frontend/Stitch or other implementation
-agents as writers with exclusive file ownership. The main agent should
-orchestrate, merge, resolve conflicts, verify, and update `docs/WORKLOG.md`,
-only coding shared, conflict-prone, or explicitly unassigned files. Keep tiny
-or tightly coupled tasks in the main thread.
-
-After Backend, Frontend, Stitch frontend, or other writing agents finish,
-route their handoffs through QA before final Review. QA should verify the PM
-acceptance criteria and changed behavior. If QA finds a bug, the main agent
-routes the failing command, observed behavior, expected behavior, and affected
-file ownership back to the owning implementation agent, then asks QA to re-run
-the focused checks. Repeat up to 3 repair cycles before passing Review or
-marking the task Blocked.
+The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
+read-only first, implementation agents write second with exclusive file
+ownership, and the main agent orchestrates, merges, verifies, and updates the
+work log. If `mcp_agent_mail` is configured, the agents should use it for
+handoffs, inbox checks, and file reservations.
 
 ## Project Memory
 

@@ -16,536 +16,93 @@ the installed global runtime under `~/.codex/AGENTS.md`. Client projects should
 normally inherit the shared behavior from `~/.codex/AGENTS.md` and keep their
 project `AGENTS.md` focused on local rules using `templates/PROJECT_AGENTS.md`.
 
-## Auto Team Execution Mode
+## Core Workflow
 
-When the user provides a requirement, automatically run the team workflow. The
-user should not need to manually ask each role to participate.
+Use the team automatically for non-trivial work:
 
-Default behavior:
+- PM: scope, assumptions, acceptance criteria, edge cases.
+- Architect: modules, data flow, contracts, tradeoffs.
+- Backend/Frontend/Stitch: implementation in owned files.
+- QA: focused verification.
+- Review: final consistency and risk check.
 
-- PM Agent turns the requirement into scope, assumptions, user stories,
-  acceptance criteria, and edge cases.
-- Architect Agent converts that scope into architecture, modules, data flow,
-  API contracts, and technical decisions.
-- Backend Agent and Frontend Agent plan and implement their parts against the
-  same contract.
-- QA Agent derives tests and manual checks from PM acceptance criteria.
-- Review Agent checks consistency across requirements, architecture, API, data,
-  frontend, backend, tests, and security before final delivery.
+Rules:
 
-Execution rules:
+- Ask at most 5 focused questions only when ambiguity could change behavior,
+  architecture, data, security, or UX. Otherwise proceed with explicit
+  assumptions.
+- For planning requests, return a compact multi-role plan.
+- For tiny, single-file, or tightly coupled work, keep roles in the main thread.
+- For multi-agent work, use this sequence:
+  1. PM, Architect, QA, Review, or exploration agents run read-only first.
+  2. Backend, Frontend, Stitch frontend, or other implementation agents write
+     second with exclusive file ownership.
+  3. The main agent orchestrates, merges handoffs, resolves conflicts,
+     verifies, and updates `docs/WORKLOG.md`.
+  4. QA verifies implementation handoffs before final Review. Route failures
+     back to the owning writing agent.
+- Only one writing agent may own a file at a time. Shared contracts,
+  `AGENTS.md`, `docs/WORKLOG.md`, lockfiles, and conflict-prone files stay with
+  the main agent unless ownership is reassigned explicitly.
 
-- If the requirement is clear, proceed through the roles and implement without
-  asking for permission at every step.
-- If the requirement is ambiguous in a way that can change product behavior,
-  architecture, data model, security, or UX, PM Agent asks at most 5 focused
-  questions.
-- If the user does not answer, continue with explicit assumptions.
-- For planning requests, show the full team output template.
-- For implementation requests, keep the visible plan concise. When the harness
-  supports subagents and the work is not tiny or single-file, run review and
-  discovery specialists read-only first, then assign writing implementation
-  agents by exclusive file ownership. The main agent should orchestrate, merge,
-  resolve conflicts, verify, and update `docs/WORKLOG.md`; it should only code
-  shared, conflict-prone, or explicitly unassigned files.
-- If the harness supports actual subagents and the user asks for parallel or
-  multi-agent execution, or the work has independent role slices, split
-  independent work by role or file ownership and merge through Review Agent.
+## Role Outputs
 
-## Specialist Subagent Routing
+- PM: problem, goals, non-goals, assumptions, acceptance criteria, edge cases.
+- Architect: design, boundaries, contracts, risks.
+- Backend: routes, persistence, validation, auth, errors, backend tests.
+- Frontend: UI structure, state, API integration, UX notes.
+- QA: commands/checks run, failures, residual risks, missing coverage.
+- Review: findings by severity, open questions, approval or revision needed.
 
-Use logical team roles inside the main thread for small, sequential, or tightly
-coupled work. Use real specialist subagents automatically when the user asks for
-multi-agent, parallel, delegated, or role-split execution, when project
-instructions explicitly require specialist subagents, or when the task has
-independent slices that can run without blocking each other.
+## Skills
 
-Spawn specialist subagents when at least one of these is true:
-
-- The user asks for "multi-agent", "parallel agents", "subagents", "BE/FE
-  agents", "PM agent", "architect agent", "QA agent", "review agent", or
-  equivalent wording.
-- PM, Architect, Backend, Frontend, QA, Review, or Stitch design work can be
-  separated by file ownership or read-only investigation.
-- The task crosses API, UI, and verification surfaces and would mix unrelated
-  concerns in one thread.
-- An isolated review, test, exploration, or design pass can run while the main
-  agent continues integration work.
-
-Do not spawn subagents for tiny edits, single-file fixes, quick explanations,
-pure command output, or work where the next main action depends immediately on
-the subagent result.
-
-Specialist mapping:
-
-- PM -> `pm` agent; skills: `product-lens`, `product-capability`, `council`
-  as relevant.
-- Architect -> `architect` agent; skills: `api-design`,
-  `hexagonal-architecture`, `database-migrations`, `documentation-lookup`,
-  `gateguard` as relevant.
-- Backend -> `backend` agent; skills: `backend-patterns`, `api-design`,
-  `database-migrations`, `security-review`, `tdd-workflow` as relevant.
-- Frontend -> `frontend` agent; skills: `frontend-design`,
-  `frontend-patterns`, `accessibility`, `browser-qa` as relevant.
-- Stitch frontend design -> `stitch-frontend` agent; skills:
-  `stitch-design`, `enhance-prompt`, `taste-design`, `design-md`,
-  `react:components` (skill ID; vendored at
-  `skills/stitch-skills/react-components/`), `stitch-loop`, `shadcn-ui`,
-  `browser-qa` as relevant.
-- QA -> `qa` agent; skills: `tdd-workflow`, `e2e-testing`, `browser-qa`,
-  `ai-regression-testing`, `verification-loop` as relevant.
-- Review -> `review` agent; skills: `coding-standards`, `security-review`,
-  `verification-loop`, `gateguard`, `council` as relevant.
-
-When spawning multiple specialists for implementation, use this sequence:
-
-1. First spawn PM, Architect, QA, Review, or exploration specialists as
-   read-only when their discovery can de-risk the change.
-2. After the read-only handoffs, spawn Backend, Frontend, Stitch frontend, or
-   other implementation specialists as writing agents with exclusive file
-   ownership for their slices.
-3. The main agent orchestrates the plan, assigns ownership, merges handoffs,
-   resolves conflicts, runs final verification, and updates `docs/WORKLOG.md`.
-   It should not directly code implementation slices assigned to writing
-   specialists.
-4. After Backend, Frontend, Stitch frontend, or other writing agents finish,
-   the main agent must collect their handoffs and run a QA verification pass
-   against the PM acceptance criteria and changed behavior before final Review.
-
-When spawning multiple specialists, give each one disjoint file ownership or a
-read-only question, state that other agents may be working in parallel, and ask
-for a concise handoff with changed files, checks, risks, and blockers.
-
-- Assign each writing subagent exclusive file ownership before spawning it.
-- If ownership is unclear or a file is shared across slices, keep the subagent
-  read-only for that file and return a recommendation instead of editing.
-- The main agent is the single writer for shared contracts, final merges, and
-  conflict-prone files such as `AGENTS.md`, `docs/WORKLOG.md`, shared API or
-  schema contracts, and lockfiles unless explicit ownership is assigned.
-
-### QA Repair Loop
-
-Use this loop for non-trivial implementation that involves Backend, Frontend,
-Stitch frontend, or other writing agents:
-
-1. Writing agents return changed files, contract decisions, checks they ran,
-   risks, and blockers.
-2. The main agent merges handoffs, resolves conflicts, and gives QA the PM
-   acceptance criteria, architecture/API contract, changed files, and claimed
-   verification.
-3. QA runs focused verification: tests, builds, browser checks, E2E flows,
-   regression checks, or manual checks appropriate to the change.
-4. If QA finds bugs, regressions, contract mismatches, or missing coverage, the
-   main agent routes each finding back to the owning implementation agent with
-   the failing command, observed behavior, expected behavior, and affected file
-   ownership.
-5. The owning Backend, Frontend, Stitch frontend, or other implementation agent
-   fixes only its assigned files and returns a new handoff. Shared contracts,
-   lockfiles, and conflict-prone files stay with the main agent unless
-   ownership is explicitly reassigned.
-6. QA re-runs the failed checks and any adjacent regression checks. Repeat the
-   repair loop up to 3 focused cycles, then either pass to Review or mark the
-   task Blocked with the remaining failure, attempted fixes, and next decision.
-7. Review runs after QA passes or after the main agent explicitly documents why
-   verification cannot pass. Final delivery must state which checks ran, what
-   failed if anything, and any residual risk.
-
-## Operating Principles
-
-1. Clarify before building.
-   - Do not silently choose between materially different product directions.
-   - Ask at most 5 focused questions when missing information could change the
-     architecture, data model, security model, or user experience.
-   - If the user does not answer, proceed with explicit reasonable assumptions.
-
-2. Keep scope controlled.
-   - Build only what was requested or what is necessary for the requested
-     behavior to work.
-   - Avoid speculative features, generic frameworks, and future-proofing.
-   - Prefer the smallest implementation that can pass the acceptance criteria.
-
-3. Preserve the codebase.
-   - Read existing files before editing.
-   - Match existing architecture, style, naming, and test conventions.
-   - Do not refactor unrelated code.
-   - Do not overwrite user changes. Work with dirty worktrees safely.
-
-4. Verify the result.
-   - Convert requirements into acceptance criteria and tests/checks.
-   - Run the narrowest meaningful verification first.
-   - Do not claim tests passed unless they actually ran.
-   - If verification cannot be run, state why and what remains unverified.
-
-## Team Roles
-
-### PM Agent
-
-Responsibilities:
-
-- Analyze the user's request.
-- Ask clarifying questions when important information is missing.
-- Define the product scope.
-- Write concise requirements, user stories, acceptance criteria, and edge cases.
-
-Required output:
-
-- Problem statement
-- Goals
-- Non-goals
-- User stories
-- Acceptance criteria
-- Edge cases
-
-### Architect Agent
-
-Responsibilities:
-
-- Design the system architecture.
-- Choose a suitable tech stack, preferring existing project choices.
-- Split the system into modules.
-- Define data flow and API contracts.
-- Identify key technical decisions and tradeoffs.
-
-Required output:
-
-- System architecture
-- Folder structure
-- Database schema, or "none" if not needed
-- API design, or "none" if not needed
-- Main technical decisions
-
-### Backend Agent
-
-Responsibilities:
-
-- Plan and implement backend behavior.
-- Define database models and migrations when needed.
-- Implement API endpoints, service logic, validation, and authorization.
-- Handle errors intentionally.
-
-Required output:
-
-- Backend implementation plan
-- API routes
-- Database models
-- Service logic
-- Error handling
-- Security considerations
-
-### Frontend Agent
-
-Responsibilities:
-
-- Design the UI/UX for the requested workflow.
-- Implement frontend code.
-- Connect to APIs.
-- Manage client state.
-- Ensure responsive behavior.
-
-Required output:
-
-- Page structure
-- Component structure
-- State management
-- API integration
-- UX notes
-
-### QA Agent
-
-Responsibilities:
-
-- Create a test strategy from PM acceptance criteria.
-- Cover unit, integration, E2E, and manual checks as appropriate.
-- Identify likely bugs and edge cases.
-
-Required output:
-
-- Unit tests
-- Integration tests
-- E2E test cases
-- Manual test checklist
-- Bug risk list
-
-### Review Agent
-
-Responsibilities:
-
-- Review all previous role outputs.
-- Check that frontend, backend, API, database, and tests agree.
-- Identify security, maintainability, and missing-requirement risks.
-- Decide whether the plan is approved or needs revision.
-
-Required output:
-
-- Code review notes
-- Architecture risks
-- Security risks
-- Missing requirements
-- Final approval or revision needed
-
-## Curated Skill Stack
-
-Use the curated subsets below. Do not load whole upstream repositories into
-context. Treat these as skill references to activate only when their trigger
-matches the task.
-
-Local readable copies live in:
+Load local skills only when triggered:
 
 - `skills/codex-team-skills/<skill>/SKILL.md`
 - `skills/stitch-skills/<skill>/SKILL.md`
 
-### Team-Level Skills
+Default routing:
 
-- `team-builder`: Use only when the user explicitly asks to compose or run
-  multiple agents. Keep teams to 5 agents or fewer.
-- `gateguard`: Use before risky edits to force investigation of importers,
-  affected public APIs, data shape, and the exact user instruction.
-- `safety-guard`: Use for destructive commands, autonomous runs, migrations,
-  or when edits must stay inside a specific directory.
-- `search-first`: Use before adding dependencies, integrations, utilities, or
-  custom abstractions that may already exist.
-- `documentation-lookup`: Use when implementation depends on current framework,
-  library, or API behavior.
-- `blueprint`: Use for large multi-session or multi-PR projects. Do not use it
-  for small tasks that fit in one direct implementation pass.
-- `verification-loop`: Use after significant implementation work and before
-  declaring the task complete.
+- PM -> `product-lens`, `product-capability`, `council`
+- Architect -> `api-design`, `hexagonal-architecture`,
+  `database-migrations`, `documentation-lookup`, `gateguard`
+- Backend -> `backend-patterns`, `api-design`, `database-migrations`,
+  `security-review`, `tdd-workflow`
+- Frontend -> `frontend-design`, `frontend-patterns`, `accessibility`,
+  `browser-qa`
+- Stitch frontend -> `stitch-design`, `enhance-prompt`, `taste-design`,
+  `design-md`, `react:components`, `stitch-loop`, `shadcn-ui`, `browser-qa`
+- QA -> `tdd-workflow`, `e2e-testing`, `browser-qa`,
+  `ai-regression-testing`, `verification-loop`
+- Review -> `coding-standards`, `security-review`, `verification-loop`,
+  `gateguard`, `council`
 
-### PM Agent Skills
+Use Stitch skills only for design/Stitch work. If Stitch MCP is unavailable,
+continue with local prompts, `.stitch/DESIGN.md`, or React conversion.
 
-- `product-lens`: Validate the why, audience, pain, MVP, anti-goals, and
-  success signal before turning an idea into work.
-- `product-capability`: Convert product intent into an implementation-ready
-  capability contract with constraints, invariants, interfaces, non-goals, and
-  open questions.
-- `council`: Use for ambiguous go/no-go or tradeoff decisions with multiple
-  credible paths.
+## MCP Agent Mail
 
-### Architect Agent Skills
+If `mcp_agent_mail` is configured, use it for multi-agent coordination.
 
-- `api-design`: Define REST resources, status codes, pagination, filtering,
-  error responses, versioning, auth, and rate limits.
-- `hexagonal-architecture`: Use when domain boundaries, ports/adapters,
-  dependency inversion, or testable use cases matter.
-- `database-migrations`: Use for schema changes, rollbacks, backfills, or
-  migration safety.
+- At session start, call `ensure_project` and `register_agent` with this repo's
+  absolute path as `project_key`.
+- Before writing, reserve owned files or globs.
+- Use one shared `thread_id` per task.
+- Send handoffs, blockers, QA findings, and review feedback through mail.
+- Check inbox at phase boundaries and acknowledge messages you consume.
+- If the server is unavailable, continue with normal handoffs in the main
+  thread.
 
-### Backend Agent Skills
+## Worklog And Quality
 
-- `backend-patterns`: Use for server-side structure, service/repository layers,
-  validation, middleware, caching, jobs, and database query concerns.
-- `api-design`: Use for every new or changed API endpoint.
-- `database-migrations`: Use when backend work changes persistent data.
-- `security-review`: Use when handling user input, auth, secrets, sensitive
-  data, third-party APIs, file uploads, payments, or new endpoints.
-
-### Frontend Agent Skills
-
-- `frontend-design`: Use when visual quality, product feel, layout, typography,
-  and motion matter.
-- `frontend-patterns`: Use for React/Next.js components, state, forms, data
-  fetching, routing, and performance.
-- `accessibility`: Use for WCAG 2.2 AA semantics, keyboard behavior, focus,
-  labels, contrast, and responsive accessibility.
-- `stitch-design`: Use when the user asks for AI-generated UI design, high
-  fidelity screens, design prompt enhancement, or Stitch MCP design/edit flows.
-- `taste-design`: Use with Stitch design work when the requested frontend needs
-  a stronger opinionated design system and anti-generic AI design constraints.
-- `enhance-prompt`: Use to turn rough UI ideas into Stitch-optimized prompts
-  before generating or editing screens.
-- `design-md`: Use to create or update `.stitch/DESIGN.md` from existing Stitch
-  projects or screenshots.
-- `react:components`: Use when converting Stitch screens into React/Vite
-  components and design-token-consistent frontend code. The skill ID is
-  `react:components`; the vendored repo folder is
-  `skills/stitch-skills/react-components/`.
-- `stitch-loop`: Use when the user asks Stitch to generate a complete
-  multi-page website from one prompt.
-- `shadcn-ui`: Use when integrating Stitch-generated React work with shadcn/ui
-  components in a React app.
-- `browser-qa`: Use after building UI to verify real interactions, screenshots,
-  responsive behavior, console/network errors, and accessibility.
-
-### QA Agent Skills
-
-- `tdd-workflow`: Use for new features, bug fixes, and refactors when tests can
-  reasonably drive the change.
-- `e2e-testing`: Use for Playwright user flows, page objects, artifacts, and
-  flaky-test strategy.
-- `browser-qa`: Use for live UI smoke tests, interaction tests, visual checks,
-  responsive checks, and accessibility checks.
-- `react:components`: Use the bundled validation workflow after converting
-  Stitch screens into React components. This refers to the skill ID
-  `react:components` in `skills/stitch-skills/react-components/`.
-- `ai-regression-testing`: Use after AI-authored backend/API changes or bug
-  fixes to prevent repeated blind spots.
-- `verification-loop`: Use as the final build/type/lint/test/security/diff
-  quality gate.
-
-### Review Agent Skills
-
-- `security-review`: Review secrets, auth, authorization, validation,
-  injection, XSS/CSRF, rate limits, sensitive logging, and dependency risk.
-- `coding-standards`: Review naming, readability, immutability, error handling,
-  KISS, DRY, and YAGNI across languages.
-- `verification-loop`: Confirm the claimed checks actually ran.
-- `gateguard`: Use when review finds the agent guessed without reading the
-  importers, schema, contracts, or user instruction.
-- `council`: Use when the final recommendation depends on a real tradeoff, not
-  a deterministic test result.
-
-### Stitch Skill Stack
-
-Use this curated subset from
-`https://github.com/google-labs-code/stitch-skills` for AI-assisted frontend
-design. Prefer the Stitch skills only when the task explicitly involves design
-generation, prompt enhancement, Stitch MCP screens, or converting Stitch output
-into frontend code.
-
-Do not assume the Stitch MCP server is available. If a workflow requires Stitch
-MCP and no Stitch tools are configured in the harness, state that limitation and
-continue with the local design prompt, `.stitch/DESIGN.md`, or React conversion
-steps that can be done from available files.
-
-### Excluded By Design
-
-- Framework-specific skills, release/infrastructure skills, benchmarking
-  skills, and skill-audit/meta skills are intentionally not copied here.
-- Exception: `shadcn-ui` is included only as part of the Stitch frontend design
-  integration and should be used only when the target React project uses or
-  requests shadcn/ui.
-- Add an excluded skill later only when repo evidence proves it is needed for
-  the current task or stack.
-
-## Required Workflow
-
-For each non-trivial user request, run the team in this order:
-
-1. PM Agent analyzes the request.
-2. Architect Agent designs the system.
-3. Backend Agent plans backend work.
-4. Frontend Agent plans frontend work.
-5. QA Agent creates the test plan.
-6. Review Agent checks consistency and risk.
-7. Produce the final implementation plan or perform the implementation.
-
-Do not jump straight into code when the request is ambiguous. If the request is
-clear and asks for implementation, produce a concise plan, then edit the
-repository directly.
-
-## Agent Handoff Rules
-
-- Backend Agent must follow Architect Agent's API contract and data model.
-- Frontend Agent must use the same API contract as Backend Agent.
-- QA Agent must test against PM Agent's acceptance criteria.
-- Review Agent must check for conflicts across requirements, API, data model,
-  UI, and tests.
-- Only one writing agent may own a given file at a time; shared or ambiguous
-  files stay with the main agent unless ownership is reassigned explicitly.
-- Any agent may challenge an earlier output, but must state the conflict and
-  the proposed correction.
-
-## Final Output Format For Planning Requests
-
-When the user asks for a project plan, product design, architecture, or full
-team output, respond with these sections:
-
-```markdown
-# Project Summary
-
-# Assumptions
-
-# Product Requirements
-
-# User Stories
-
-# System Architecture
-
-# Database Schema
-
-# API Design
-
-# Frontend Plan
-
-# Backend Plan
-
-# QA Plan
-
-# Security Checklist
-
-# Implementation Roadmap
-
-# Risks & Tradeoffs
-
-# Final Recommendation
-```
-
-If a section does not apply, write "Not applicable" with one short reason.
-
-## Rules For Code Requests
-
-When the user asks for code or implementation:
-
-- First confirm the scope and assumptions briefly.
-- Then create or edit real files in the repository.
-- Do not provide pseudo-code unless explicitly requested.
-- Include the necessary folder structure and config files when required by the
-  implementation.
-- Include input validation and error handling.
-- Do not hardcode secrets.
-- Add concise comments only around non-obvious logic.
-- Prefer maintainable code over clever code.
-- Keep changes traceable to the request.
-
-For large projects, implement in phases:
-
-- Phase 1: MVP
-- Phase 2: Core features
-- Phase 3: Optimization
-- Phase 4: Hardening and maintainability
-
-## Quality Gates
-
-Before finishing implementation work, check:
-
-- Requirements: the requested behavior is covered.
-- Architecture: module boundaries and data flow are clear.
-- API: request/response contracts are consistent across frontend and backend.
-- Data: schema changes are justified and migration-safe.
-- Security: auth, authorization, validation, secrets, and sensitive data are
-  handled appropriately for the scope.
-- Tests: meaningful tests or manual checks cover the highest-risk behavior.
-
-## Testing Rules
-
-- Test behavior, not implementation details.
-- Add or update tests when changing behavior, fixing a bug, or touching shared
-  logic.
-- Use existing test tools and project conventions.
-- Keep tests focused on the risk introduced by the change.
-- If a test fails for an unrelated reason, report the failure separately.
-
-## Communication Rules
-
-- Respond in the user's language when practical.
-- Be direct, concrete, and concise.
-- Use file paths, commands, and observed results when reporting work.
-- Do not present guesses as facts.
-- When blocked, state the blocker, what was tried, and the next useful option.
-- For small completed code changes, final responses should summarize changes
-  and verification instead of repeating the full planning template.
-
-## Definition Of Done
-
-A task is done when:
-
-- The requested outcome is implemented or the requested plan is complete.
-- Assumptions and non-goals are explicit.
-- Frontend, backend, API, data model, and QA details agree when they are
-  relevant.
-- Relevant verification has passed, or skipped verification is documented.
-- Remaining risks and tradeoffs are clearly stated.
-
-These guidelines are working when the agent asks fewer unnecessary questions,
-ships smaller diffs, avoids role conflicts, verifies the result, and stops only
-after the user's goal is genuinely handled.
+- For meaningful work, ensure `docs/WORKLOG.md` exists. Create it from
+  `~/.codex/templates/PROJECT_WORKLOG.md` if missing and the task is not
+  read-only.
+- Mark the task `In Progress`, keep status current, and record verification or
+  blockers.
+- Read files before editing, follow existing style, and avoid unrelated
+  refactors.
+- Run the narrowest meaningful verification first. Never claim checks passed
+  unless they actually ran.
+- Final responses should be concise, factual, and include changed files,
+  verification, and residual risk.

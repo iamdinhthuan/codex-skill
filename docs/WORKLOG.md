@@ -42,6 +42,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Add specialist subagent routing config | Added specialist subagent routing rules to repo/global instructions; added source-controlled `global/agents/*.toml`; synced `backend`, `frontend`, `qa`, `review`, and `stitch-frontend` named agents into `~/.codex/config.toml` and `~/.codex/agents/`; updated client/bootstrap docs. | `tomllib` parsed `~/.codex/config.toml` and agent TOML files; `rg` confirmed config references; `git diff --check` passed. |
 | Done | Complete full-role Codex subagent setup | Clarified automatic spawning for independent role slices; removed stale root `SKILL.md` reference from README; added `pm` and `architect` named specialist TOML files; updated sync helper, client setup docs, global bootstrap docs, team-builder wording, `~/.codex/AGENTS.md`, `~/.codex/agents/`, and `~/.codex/config.toml`. | Verified by reading source/runtime routing guidance, confirming `pm` and `architect` exist under both `global/agents/` and `~/.codex/agents/`, confirming `~/.codex/config.toml` has all seven role entries, and searching for stale README/root `SKILL.md` and old role-list wording. A combined shell verification command was canceled before completion. |
 | Done | Enforce staged multi-agent implementation flow | Updated source and global instructions so non-trivial implementation uses read-only review/discovery agents first, writing implementation agents second with exclusive file ownership, and the main agent as orchestrator/merger/verifier except for shared, conflict-prone, or explicitly unassigned files. | Reviewed updated `AGENTS.md`, `global/AGENTS.md`, `docs/GLOBAL_BOOTSTRAP.md`, and `docs/CLIENT_SETUP.md`; synced runtime via `bin/sync-codex-runtime ~/.codex`. |
+| Done | Compact prompts and add MCP agent mail coordination | Replaced the long repo/global prompts with shorter workflow-first versions, kept the staged review->implementation->QA flow, added compact `mcp_agent_mail` guidance to both prompts, documented installation/config in bootstrap/setup docs, added `[mcp_servers.mcp_agent_mail]` to `~/.codex/config.toml`, and re-synced runtime. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; `diff -q` confirmed source/runtime parity; bootstrap smoke test created `/tmp/codex-bootstrap-test`; `grep` confirmed `mcp_agent_mail` config; `git diff --check` passed. |
 
 ## Decisions
 
@@ -55,6 +56,9 @@ finishes, changes direction, or leaves follow-up work.
   commits. Do not silently replace them with floating upstream content.
 - Do not assume Stitch MCP is available. If MCP tools are missing, continue with
   local prompt/design-system/React conversion work that can be done from files.
+- Keep shared prompts compact. Put only the durable workflow, routing, worklog,
+  and coordination rules in `AGENTS.md` and `global/AGENTS.md`; move setup and
+  operational detail to docs.
 - Use real specialist subagents automatically when the user asks for
   multi-agent, parallel, delegated, or role-split execution, when project
   instructions explicitly require specialist subagents, or when independent
@@ -64,6 +68,9 @@ finishes, changes direction, or leaves follow-up work.
   the main agent orchestrates, merges, resolves conflicts, verifies, and updates
   the work log. Otherwise keep small tasks in the main thread with logical team
   roles.
+- Use local `mcp_agent_mail` over the Codex MCP entry `http://127.0.0.1:8765/mcp/`
+  when you want role-to-role coordination, inbox reminders, handoffs, and file
+  reservations.
 - Keep unrelated worktree changes out of commits. The current `SKILL.md`
   deletion remains outside the Stitch branch commit scope.
 
