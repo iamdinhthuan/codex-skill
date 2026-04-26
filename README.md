@@ -41,6 +41,177 @@ The local skill set is intentionally small. Framework-specific, infrastructure,
 benchmarking, and skill-audit skills are excluded until repo evidence shows
 they are needed.
 
+## Quick Install On Another Machine
+
+Use this when setting up a new machine with the same Codex team workflow,
+specialist subagents, skills, project bootstrap templates, and agent-mail
+coordination.
+
+### 1. Clone And Install Runtime
+
+```bash
+git clone https://github.com/iamdinhthuan/codex-skill.git ~/codex_skill
+cd ~/codex_skill
+bin/sync-codex-runtime ~/.codex
+```
+
+This installs:
+
+- `~/.codex/AGENTS.md`
+- `~/.codex/agents/*.toml`
+- `~/.codex/skills/codex-team-skills/`
+- `~/.codex/skills/stitch-skills/`
+- `~/.codex/templates/`
+- `~/.codex/bin/codex-bootstrap-project`
+- `~/.codex/bin/sync-codex-runtime`
+
+### 2. Configure Codex
+
+Add or verify these blocks in `~/.codex/config.toml`:
+
+```toml
+[features]
+apps = true
+multi_agent = true
+
+[agents]
+max_threads = 12
+max_depth = 2
+job_max_runtime_seconds = 1800
+
+[agents.pm]
+description = "PM specialist for product scope, assumptions, user stories, acceptance criteria, edge cases, and requirement clarification."
+config_file = "agents/pm.toml"
+nickname_candidates = ["PM", "Product", "Requirements"]
+
+[agents.architect]
+description = "Architect specialist for system design, module boundaries, data flow, API contracts, data model decisions, and technical tradeoffs."
+config_file = "agents/architect.toml"
+nickname_candidates = ["Architect", "Architecture", "Design"]
+
+[agents.backend]
+description = "Backend specialist for API routes, validation, service logic, persistence, authorization, migrations, backend tests, and security-sensitive server work."
+config_file = "agents/backend.toml"
+nickname_candidates = ["Backend", "API", "Server"]
+
+[agents.frontend]
+description = "Frontend specialist for UI, components, state, forms, routing, API integration, responsive behavior, accessibility, and browser QA."
+config_file = "agents/frontend.toml"
+nickname_candidates = ["Frontend", "UI", "Client"]
+
+[agents.qa]
+description = "QA specialist for focused tests, E2E flows, browser checks, regression coverage, verification commands, and residual-risk reporting."
+config_file = "agents/qa.toml"
+nickname_candidates = ["QA", "Tests", "Verifier"]
+
+[agents.review]
+description = "Review specialist for requirements fit, architecture consistency, security, maintainability, test coverage, and concrete code-review findings."
+config_file = "agents/review.toml"
+nickname_candidates = ["Review", "Guard", "Auditor"]
+
+[agents.stitch-frontend]
+description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
+config_file = "agents/stitch-frontend.toml"
+nickname_candidates = ["Stitch", "Design", "UX"]
+
+[mcp_servers.mcp_agent_mail]
+url = "http://127.0.0.1:8765/api/"
+```
+
+Optional MCP servers:
+
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+
+[mcp_servers.stitch]
+url = "https://stitch.googleapis.com/mcp"
+env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
+```
+
+If using Stitch, set the API key in the shell that launches Codex:
+
+```bash
+export STITCH_API_KEY="your-key"
+```
+
+### 3. Install And Start Agent Mail
+
+Install `mcp_agent_mail`:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
+```
+
+Start the mail server before a Codex session where role agents should exchange
+handoffs, blockers, QA findings, review notes, or file reservations:
+
+```bash
+uv run python -m mcp_agent_mail.cli serve-http
+```
+
+Codex agents should register against the target repo path as `project_key`, use
+one shared `thread_id` per task, and use the registered agent name/token returned
+by the mail server. Requested names may be replaced by canonical names.
+
+### 4. Verify Install
+
+```bash
+test -f ~/.codex/AGENTS.md
+test -f ~/.codex/agents/pm.toml
+test -f ~/.codex/agents/architect.toml
+test -f ~/.codex/agents/backend.toml
+test -f ~/.codex/agents/frontend.toml
+test -f ~/.codex/agents/qa.toml
+test -f ~/.codex/agents/review.toml
+test -f ~/.codex/agents/stitch-frontend.toml
+test -x ~/.codex/bin/sync-codex-runtime
+grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
+find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
+find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
+~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
+test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
+test -f /tmp/codex-bootstrap-test/AGENTS.md
+```
+
+Expected skill counts:
+
+- `codex-team-skills`: 23
+- `stitch-skills`: 8
+
+### 5. Use In A Project
+
+Open Codex inside any repo. The global `~/.codex/AGENTS.md` should load
+automatically. For meaningful implementation, planning, review, or debugging,
+Codex should:
+
+1. Check or create `docs/WORKLOG.md`.
+2. Use PM, Architect, Backend, Frontend, QA, Review, and Stitch roles as needed.
+3. Spawn real subagents when work has independent role/file slices.
+4. Run read-only discovery/review agents first.
+5. Assign writing agents exclusive file ownership.
+6. Use `mcp_agent_mail` for handoffs, blockers, QA findings, review feedback,
+   inbox checks, and file reservations when the server is configured.
+7. Send writing-agent handoffs through QA before final Review.
+8. Route QA failures back to the owning writer for up to 3 focused repair
+   cycles before Review or Blocked.
+
+Manual project bootstrap:
+
+```bash
+cd /path/to/project
+~/.codex/bin/codex-bootstrap-project
+```
+
+After changing this repo on a client machine, refresh the installed runtime:
+
+```bash
+cd ~/codex_skill
+git pull --ff-only
+bin/sync-codex-runtime ~/.codex
+```
+
 ## Source Attribution
 
 The curated skill files under `skills/codex-team-skills/` are adapted from:
