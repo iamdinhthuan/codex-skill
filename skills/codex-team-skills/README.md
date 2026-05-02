@@ -17,22 +17,15 @@ use, not for loading every skill into every session.
 ## Essential Skills
 
 Team operation:
-- `team-builder`
-- `gateguard`
-- `safety-guard`
 - `search-first`
 - `documentation-lookup`
-- `blueprint`
 - `verification-loop`
 
 PM Agent:
 - `product-lens`
-- `product-capability`
-- `council`
 
 Architect Agent:
 - `api-design`
-- `hexagonal-architecture`
 - `database-migrations`
 
 Backend Agent:
@@ -51,17 +44,16 @@ QA Agent:
 - `tdd-workflow`
 - `e2e-testing`
 - `browser-qa`
-- `ai-regression-testing`
 - `verification-loop`
 
 Review Agent:
 - `security-review`
 - `coding-standards`
 - `verification-loop`
-- `council`
 
 ## Excluded By Design
 
-Framework-specific skills, release/infrastructure skills, benchmarking skills,
-and skill-audit/meta skills are intentionally not copied here. Add them later
-only when repo evidence proves they are needed.
+Heavy orchestration, rare architecture, safety-duplicate, framework-specific,
+release/infrastructure, benchmarking, and skill-audit/meta skills are
+intentionally not copied here. Add them later only when repo evidence proves
+they are needed.

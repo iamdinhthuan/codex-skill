@@ -24,27 +24,6 @@ Global skills are installed at:
 
 These skills should be loaded only when their trigger matches the current task.
 
-## MCP Agent Mail
-
-For role-to-role coordination, install `mcp_agent_mail`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
-
-Start it when you want mail-based coordination enabled:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Add this MCP server entry to `~/.codex/config.toml`:
-
-```toml
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
-```
-
 ## Specialist Subagents
 
 Codex supports named agent roles through `~/.codex/config.toml`. This repo
@@ -81,11 +60,9 @@ entries that point at those files. The intended specialist roles are:
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
 read-only first, implementation agents write second with exclusive file
 ownership, and the main agent orchestrates, merges, verifies, and updates the
-work log. QA routes failures back to the owning writer for up to 3 focused
-repair cycles before Review or Blocked. If `mcp_agent_mail` is configured, the
-agents should use it for handoffs, inbox checks, and file reservations. Agents
-should use the registered name and token returned by the mail server because
-requested names may be replaced with canonical names.
+work log. Coordination stays local to Codex subagents and the parent thread.
+QA routes failures back to the owning writer for up to 3 focused repair cycles
+before Review or Blocked.
 
 ## Project Memory
 

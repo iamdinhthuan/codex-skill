@@ -23,13 +23,6 @@ Unified entry point for Stitch design work. Handles prompt enhancement (UI/UX ke
 npx skills add google-labs-code/stitch-skills --skill stitch-design --global
 ```
 
-### stitch-loop
-Generates a complete multi-page website from a single prompt using Stitch, with automated file organization and validation.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill stitch-loop --global
-```
-
 ### design-md
 Analyzes Stitch projects and generates comprehensive DESIGN.md files documenting design systems in natural, semantic language optimized for Stitch screen generation.
 
@@ -49,20 +42,6 @@ Converts Stitch screens to React component systems with automated validation and
 
 ```bash
 npx skills add google-labs-code/stitch-skills --skill react:components --global
-```
-
-### remotion
-Generates walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays to showcase app screens professionally.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill remotion --global
-```
-
-### shadcn-ui
-Expert guidance for integrating and building applications with shadcn/ui components. Helps discover, install, customize, and optimize shadcn/ui components with best practices for React applications.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill shadcn-ui --global
 ```
 
 ## Repository Structure

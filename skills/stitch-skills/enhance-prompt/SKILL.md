@@ -139,7 +139,7 @@ Structure the enhanced prompt in this order:
 **Default:** Return the enhanced prompt as text for the user to copy.
 
 **Optional file output:** If the user requests, write to a file:
-- `next-prompt.md` — for use with the `stitch-loop` skill
+- `next-prompt.md` — for a follow-up design iteration
 - Custom filename specified by user
 
 ## Examples

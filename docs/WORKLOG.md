@@ -18,8 +18,9 @@ finishes, changes direction, or leaves follow-up work.
 - Active branch: `codex/add-stitch-skills`
 - Open PR: https://github.com/iamdinhthuan/codex-skill/pull/1
 - Base branch: `main`
-- Unrelated worktree change: `SKILL.md` is deleted but intentionally not staged
-  or included in the Stitch PR.
+- Unrelated worktree changes: root `SKILL.md` is deleted, and `.gitignore` has
+  a local `docs/WORKLOG.md` ignore entry. They are not part of this refactor
+  unless the user explicitly includes them.
 
 ## Tasks
 
@@ -42,9 +43,11 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Add specialist subagent routing config | Added specialist subagent routing rules to repo/global instructions; added source-controlled `global/agents/*.toml`; synced `backend`, `frontend`, `qa`, `review`, and `stitch-frontend` named agents into `~/.codex/config.toml` and `~/.codex/agents/`; updated client/bootstrap docs. | `tomllib` parsed `~/.codex/config.toml` and agent TOML files; `rg` confirmed config references; `git diff --check` passed. |
 | Done | Complete full-role Codex subagent setup | Clarified automatic spawning for independent role slices; removed stale root `SKILL.md` reference from README; added `pm` and `architect` named specialist TOML files; updated sync helper, client setup docs, global bootstrap docs, team-builder wording, `~/.codex/AGENTS.md`, `~/.codex/agents/`, and `~/.codex/config.toml`. | Verified by reading source/runtime routing guidance, confirming `pm` and `architect` exist under both `global/agents/` and `~/.codex/agents/`, confirming `~/.codex/config.toml` has all seven role entries, and searching for stale README/root `SKILL.md` and old role-list wording. A combined shell verification command was canceled before completion. |
 | Done | Enforce staged multi-agent implementation flow | Updated source and global instructions so non-trivial implementation uses read-only review/discovery agents first, writing implementation agents second with exclusive file ownership, and the main agent as orchestrator/merger/verifier except for shared, conflict-prone, or explicitly unassigned files. | Reviewed updated `AGENTS.md`, `global/AGENTS.md`, `docs/GLOBAL_BOOTSTRAP.md`, and `docs/CLIENT_SETUP.md`; synced runtime via `bin/sync-codex-runtime ~/.codex`. |
-| Done | Compact prompts and add MCP agent mail coordination | Replaced the long repo/global prompts with shorter workflow-first versions, kept the staged review->implementation->QA flow, added compact `mcp_agent_mail` guidance to both prompts, documented installation/config in bootstrap/setup docs, added `[mcp_servers.mcp_agent_mail]` to `~/.codex/config.toml`, and re-synced runtime. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; `diff -q` confirmed source/runtime parity; bootstrap smoke test created `/tmp/codex-bootstrap-test`; `grep` confirmed `mcp_agent_mail` config; `git diff --check` passed. |
-| Done | Smoke test parallel roles and agent mail | Spawned PM, Architect, QA, and Review agents in parallel. They registered with `mcp_agent_mail`, sent handoffs to one shared `thread_id`, and main fetched the handoffs from inbox. Patched the prompt/docs gaps found by Review: compact prompts now preserve the 3-cycle QA repair loop and tell agents to use the mail server's returned canonical name/token. | Verified subagent spawn for four roles; inbox received PM, Architect, QA, and Review handoffs on `role-parallel-smoke-20260426`; file reservation cycle granted and released `docs/WORKLOG.md`; follow-up verification pending after runtime sync. |
-| Done | Document install path and publish to main | Added README quick-install instructions for cloning the repo, syncing runtime into `~/.codex`, configuring named role agents, installing/starting `mcp_agent_mail`, verifying counts/config, and using the workflow in another project. | `git diff --check`; `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; source/runtime `diff -q`; bootstrap smoke test; pushed branch and main. |
+| Done | Compact prompts and add external coordination prototype | Replaced the long repo/global prompts with shorter workflow-first versions, kept the staged review->implementation->QA flow, documented an external coordination prototype in bootstrap/setup docs, added its local MCP config entry, and re-synced runtime. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; `diff -q` confirmed source/runtime parity; bootstrap smoke test created `/tmp/codex-bootstrap-test`; `git diff --check` passed. |
+| Done | Smoke test parallel roles and external coordination | Spawned PM, Architect, QA, and Review agents in parallel. They exchanged handoffs through the prototype coordination path, and the main agent patched prompt/docs gaps found by Review: compact prompts preserved the 3-cycle QA repair loop and canonical identity guidance. | Verified subagent spawn for four roles; file reservation cycle granted and released `docs/WORKLOG.md`; follow-up verification pending after runtime sync. |
+| Done | Document install path and publish to main | Added README quick-install instructions for cloning the repo, syncing runtime into `~/.codex`, configuring named role agents, verifying counts/config, and using the workflow in another project. | `git diff --check`; `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; source/runtime `diff -q`; bootstrap smoke test; pushed branch and main. |
+| Done | Simplify workflow and remove external mail coordination | Removed the external mail coordination path from source/runtime guidance and local config, kept multi-agent coordination local to Codex subagents and the parent thread, documented research patterns from CrewAI, LangGraph, AutoGen, and `hoangnb24/skills`, pruned the default skill stack from 23/8 to 15/4, and synced the installed runtime. | `rg` found no removed coordination refs in source/runtime; `rg` found no removed skill refs in active routing/docs/runtime; source/runtime skill counts are 15 Codex and 4 Stitch; removed skill directories are absent in source/runtime; `tomllib` parsed config and agents; source/runtime `diff -q`; `git diff --check`; markdown fences balanced. |
+| Done | Align subagent config with OpenAI docs | Added required `name` and `description` fields to each specialist agent TOML, set read-only sandbox for PM/Architect/QA/Review, reduced `agents.max_depth` from 2 to 1 to avoid recursive fan-out, and carried over the lightweight Khuym worker-result labels `[DONE]`, `[BLOCKED]`, `[HANDOFF]`, and `[NOOP]`. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and specialist TOML files; schema check confirmed names/descriptions and read-only sandbox; source/runtime `diff -q`; `rg` confirmed `max_depth = 1`; `git diff --check`. |
 
 ## Decisions
 
@@ -70,9 +73,8 @@ finishes, changes direction, or leaves follow-up work.
   the main agent orchestrates, merges, resolves conflicts, verifies, and updates
   the work log. Otherwise keep small tasks in the main thread with logical team
   roles.
-- Use local `mcp_agent_mail` over the Codex MCP entry `http://127.0.0.1:8765/mcp/`
-  when you want role-to-role coordination, inbox reminders, handoffs, and file
-  reservations.
+- Use Codex subagents plus parent-thread handoffs for role coordination. Keep
+  durable task state in `docs/WORKLOG.md`.
 - Keep unrelated worktree changes out of commits. The current `SKILL.md`
   deletion remains outside the Stitch branch commit scope.
 

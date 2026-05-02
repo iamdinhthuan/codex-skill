@@ -37,8 +37,8 @@ Rules:
   1. PM, Architect, QA, Review, or exploration agents run read-only first.
   2. Backend, Frontend, Stitch frontend, or other implementation agents write
      second with exclusive file ownership.
-  3. The main agent orchestrates, merges handoffs, resolves conflicts,
-     verifies, and updates `docs/WORKLOG.md`.
+  3. The main agent orchestrates from the parent thread, merges handoffs,
+     resolves conflicts, verifies, and updates `docs/WORKLOG.md`.
   4. QA verifies implementation handoffs before final Review. Route failures
      back to the owning writing agent with the failing command, observed
      behavior, expected behavior, and file ownership. Repeat focused repair
@@ -46,6 +46,9 @@ Rules:
 - Only one writing agent may own a file at a time. Shared contracts,
   `AGENTS.md`, `docs/WORKLOG.md`, lockfiles, and conflict-prone files stay with
   the main agent unless ownership is reassigned explicitly.
+- Keep coordination local: use Codex subagents, the parent thread, explicit file
+  ownership, and `docs/WORKLOG.md`. Do not require external coordination
+  services for normal work.
 
 ## Role Outputs
 
@@ -65,39 +68,35 @@ Load local skills only when triggered:
 
 Default routing:
 
-- PM -> `product-lens`, `product-capability`, `council`
-- Architect -> `api-design`, `hexagonal-architecture`,
-  `database-migrations`, `documentation-lookup`, `gateguard`
+- PM -> `product-lens`
+- Architect -> `api-design`, `database-migrations`, `documentation-lookup`
 - Backend -> `backend-patterns`, `api-design`, `database-migrations`,
   `security-review`, `tdd-workflow`
 - Frontend -> `frontend-design`, `frontend-patterns`, `accessibility`,
   `browser-qa`
-- Stitch frontend -> `stitch-design`, `enhance-prompt`, `taste-design`,
-  `design-md`, `react:components`, `stitch-loop`, `shadcn-ui`, `browser-qa`
-- QA -> `tdd-workflow`, `e2e-testing`, `browser-qa`,
-  `ai-regression-testing`, `verification-loop`
-- Review -> `coding-standards`, `security-review`, `verification-loop`,
-  `gateguard`, `council`
+- Stitch frontend -> `stitch-design`, `enhance-prompt`, `design-md`,
+  `react:components`, `browser-qa`
+- QA -> `tdd-workflow`, `e2e-testing`, `browser-qa`, `verification-loop`
+- Review -> `coding-standards`, `security-review`, `verification-loop`
 
 Use Stitch skills only for design/Stitch work. If Stitch MCP is unavailable,
 continue with local prompts, `.stitch/DESIGN.md`, or React conversion.
 
-## MCP Agent Mail
+## Local Coordination
 
-If `mcp_agent_mail` is configured, use it for multi-agent coordination.
+The parent Codex thread is the coordinator. Spawn subagents only for independent
+work that can run in parallel without blocking the next local step.
 
-- At session start, call `ensure_project` and `register_agent` with this repo's
-  absolute path as `project_key`.
-- Use the registered agent name and token returned by the mail server for later
-  sends; requested names may be replaced with canonical names.
-- Before writing, reserve owned files or globs.
-- Use one shared `thread_id` per task.
-- Send handoffs, blockers, QA findings, and review feedback through mail. If a
-  send is blocked by contact policy, request/accept contact or retry with
-  `auto_contact_if_blocked` when available.
-- Check inbox at phase boundaries and acknowledge messages you consume.
-- If the server is unavailable, continue with normal handoffs in the main
-  thread.
+- Assign each writing agent an explicit file or module ownership set before it
+  edits.
+- Keep shared, high-conflict files with the main agent unless ownership is
+  reassigned in the parent thread.
+- Handoffs return to the parent thread with changed files, verification, risks,
+  and blockers.
+- Ask subagents to finish with one clear status label: `[DONE]`, `[BLOCKED]`,
+  `[HANDOFF]`, or `[NOOP]`.
+- Record durable task state in `docs/WORKLOG.md`; avoid additional coordination
+  infrastructure unless a project explicitly adds it for local reasons.
 
 ## Worklog And Quality
 

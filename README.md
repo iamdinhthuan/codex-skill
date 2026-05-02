@@ -44,8 +44,7 @@ they are needed.
 ## Quick Install On Another Machine
 
 Use this when setting up a new machine with the same Codex team workflow,
-specialist subagents, skills, project bootstrap templates, and agent-mail
-coordination.
+specialist subagents, skills, and project bootstrap templates.
 
 ### 1. Clone And Install Runtime
 
@@ -76,7 +75,7 @@ multi_agent = true
 
 [agents]
 max_threads = 12
-max_depth = 2
+max_depth = 1
 job_max_runtime_seconds = 1800
 
 [agents.pm]
@@ -113,9 +112,6 @@ nickname_candidates = ["Review", "Guard", "Auditor"]
 description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
-
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
 ```
 
 Optional MCP servers:
@@ -136,26 +132,7 @@ If using Stitch, set the API key in the shell that launches Codex:
 export STITCH_API_KEY="your-key"
 ```
 
-### 3. Install And Start Agent Mail
-
-Install `mcp_agent_mail`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
-
-Start the mail server before a Codex session where role agents should exchange
-handoffs, blockers, QA findings, review notes, or file reservations:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Codex agents should register against the target repo path as `project_key`, use
-one shared `thread_id` per task, and use the registered agent name/token returned
-by the mail server. Requested names may be replaced by canonical names.
-
-### 4. Verify Install
+### 3. Verify Install
 
 ```bash
 test -f ~/.codex/AGENTS.md
@@ -167,7 +144,6 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
-grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
 find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
@@ -177,10 +153,10 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected skill counts:
 
-- `codex-team-skills`: 23
-- `stitch-skills`: 8
+- `codex-team-skills`: 15
+- `stitch-skills`: 4
 
-### 5. Use In A Project
+### 4. Use In A Project
 
 Open Codex inside any repo. The global `~/.codex/AGENTS.md` should load
 automatically. For meaningful implementation, planning, review, or debugging,
@@ -191,8 +167,8 @@ Codex should:
 3. Spawn real subagents when work has independent role/file slices.
 4. Run read-only discovery/review agents first.
 5. Assign writing agents exclusive file ownership.
-6. Use `mcp_agent_mail` for handoffs, blockers, QA findings, review feedback,
-   inbox checks, and file reservations when the server is configured.
+6. Coordinate through the parent thread and record durable state in
+   `docs/WORKLOG.md`.
 7. Send writing-agent handoffs through QA before final Review.
 8. Route QA failures back to the owning writer for up to 3 focused repair
    cycles before Review or Blocked.

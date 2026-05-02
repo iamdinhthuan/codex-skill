@@ -42,7 +42,6 @@ stitch-design/
 ## Works With
 
 - **`react:components` skill**: Hand-off generated designs for frontend implementation.
-- **`stitch-loop` skill**: Provides the `DESIGN.md` context for autonomous building loops.
 - **Multi-agent workflows**: Refines prompts before passing design tasks to specialized agents.
 
 ## Learn More

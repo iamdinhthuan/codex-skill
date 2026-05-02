@@ -8,8 +8,6 @@ origin: upstream
 
 This lane owns product diagnosis, not implementation-ready specification writing.
 
-If the user needs a durable PRD-to-SRS or capability-contract artifact, hand off to `product-capability`.
-
 ## When to Use
 
 - Before starting any feature — validate the "why"
@@ -36,7 +34,8 @@ Like YC office hours but automated. Asks the hard questions:
 
 Output: a `PRODUCT-BRIEF.md` with answers, risks, and a go/no-go recommendation.
 
-If the result is "yes, build this," the next lane is `product-capability`, not more founder-theater.
+If the result is "yes, build this," hand the product brief back to the main
+thread for architecture and implementation planning.
 
 ### Mode 2: Founder Review
 
@@ -89,4 +88,4 @@ Pair with:
 - `/browser-qa` to verify the user journey audit findings
 - `/design-system audit` for visual polish assessment
 - `/canary-watch` for post-launch monitoring
-- `product-capability` when the product brief needs to become an implementation-ready capability plan
+- the main thread when the product brief needs to become an implementation plan

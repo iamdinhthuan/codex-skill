@@ -1,8 +1,8 @@
 # Client Setup
 
 Use this guide to make another machine read this repo and install the same
-Codex team workflow, skills, Stitch design support, and project work-log
-bootstrap.
+Codex team workflow, lean skill set, Stitch design support, and project
+work-log bootstrap.
 
 ## 1. Clone The Repo
 
@@ -27,25 +27,11 @@ templates, and helper scripts into `~/.codex`.
 bin/sync-codex-runtime ~/.codex
 ```
 
-## 3. Configure MCP Servers
+## 3. Configure Codex
 
-Codex can use the skills without MCP, but Stitch design generation requires a
-configured Stitch MCP server. For role-to-role coordination, install and run
-`mcp_agent_mail` too.
-
-Install `mcp_agent_mail`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
-
-Start the server when you want agent mail enabled:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Add or verify these entries in `~/.codex/config.toml`:
+Add or verify these entries in `~/.codex/config.toml`. Codex can use the skills
+without MCP; Stitch design generation is the only optional MCP server shown
+here.
 
 ```toml
 [features]
@@ -54,7 +40,7 @@ multi_agent = true
 
 [agents]
 max_threads = 12
-max_depth = 2
+max_depth = 1
 job_max_runtime_seconds = 1800
 
 [agents.pm]
@@ -96,9 +82,6 @@ nickname_candidates = ["Stitch", "Design", "UX"]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest"]
 
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
-
 [mcp_servers.stitch]
 url = "https://stitch.googleapis.com/mcp"
 env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
@@ -124,7 +107,6 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
-grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
 find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
@@ -134,8 +116,8 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected counts:
 
-- `codex-team-skills`: 23
-- `stitch-skills`: 8
+- `codex-team-skills`: 15
+- `stitch-skills`: 4
 
 ## 5. Daily Usage
 
@@ -161,10 +143,8 @@ When meaningful work starts, Codex should:
    file ownership back to the owning implementation agent, then have QA re-run
    the focused checks. Repeat up to 3 repair cycles before passing Review or
    marking the task Blocked.
-8. When using `mcp_agent_mail`, use the registered name and token returned by
-   the mail server for later sends. If contact policy blocks a handoff, request
-   contact approval or retry with `auto_contact_if_blocked` when available.
-9. Keep the work log current when task status changes.
+8. Keep coordination in the parent Codex thread and keep
+   `docs/WORKLOG.md` current when task status changes.
 
 Manual bootstrap is available:
 
@@ -191,8 +171,6 @@ After updating, rerun the verification commands above.
 - If Codex does not follow the team workflow, verify `~/.codex/AGENTS.md`
   exists and restart the Codex session.
 - If a skill is missing, verify the expected `SKILL.md` counts.
-- If agent-to-agent coordination does not work, verify the local
-  `mcp_agent_mail` server is running on `http://127.0.0.1:8765/api/`.
 - If Stitch generation fails, verify `STITCH_API_KEY` is set and the Stitch MCP
   server is configured.
 - If a project should not create local docs, tell Codex the task is read-only.
