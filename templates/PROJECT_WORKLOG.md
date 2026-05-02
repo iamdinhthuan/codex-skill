@@ -34,6 +34,9 @@ finishes, changes direction, or leaves follow-up work.
   global skill triggers.
 - Keep unrelated worktree changes out of commits unless the user explicitly
   includes them in scope.
+- For multi-agent work, use structured handoffs with one status label
+  (`[DONE]`, `[BLOCKED]`, `[HANDOFF]`, or `[NOOP]`), changed files,
+  verification, blockers or risks, and the next coordinator action.
 
 ## How To Update This Log
 

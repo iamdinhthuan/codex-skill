@@ -35,11 +35,15 @@ Rules:
 - For tiny, single-file, or tightly coupled work, keep roles in the main thread.
 - For multi-agent work, use this sequence:
   1. PM, Architect, QA, Review, or exploration agents run read-only first.
-  2. Backend, Frontend, Stitch frontend, or other implementation agents write
+  2. The main agent validates the proposed approach against repo reality before
+     any writing agent edits: relevant files were read, reusable local patterns
+     were identified, affected contracts are named, and the verification plan is
+     concrete.
+  3. Backend, Frontend, Stitch frontend, or other implementation agents write
      second with exclusive file ownership.
-  3. The main agent orchestrates from the parent thread, merges handoffs,
+  4. The main agent orchestrates from the parent thread, merges handoffs,
      resolves conflicts, verifies, and updates `docs/WORKLOG.md`.
-  4. QA verifies implementation handoffs before final Review. Route failures
+  5. QA verifies implementation handoffs before final Review. Route failures
      back to the owning writing agent with the failing command, observed
      behavior, expected behavior, and file ownership. Repeat focused repair
      checks up to 3 cycles before Review or Blocked.
@@ -92,9 +96,12 @@ work that can run in parallel without blocking the next local step.
 - Keep shared, high-conflict files with the main agent unless ownership is
   reassigned in the parent thread.
 - Handoffs return to the parent thread with changed files, verification, risks,
-  and blockers.
+  blockers, and the next action needed from the coordinator.
 - Ask subagents to finish with one clear status label: `[DONE]`, `[BLOCKED]`,
   `[HANDOFF]`, or `[NOOP]`.
+- While subagents are running, the parent thread keeps tending the work: process
+  completed handoffs, run non-overlapping local checks, and only escalate when a
+  real blocker or human decision remains.
 - Record durable task state in `docs/WORKLOG.md`; avoid additional coordination
   infrastructure unless a project explicitly adds it for local reasons.
 

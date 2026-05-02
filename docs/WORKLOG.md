@@ -16,7 +16,7 @@ finishes, changes direction, or leaves follow-up work.
 ## Current State
 
 - Active branch: `codex/add-stitch-skills`
-- Open PR: https://github.com/iamdinhthuan/codex-skill/pull/1
+- Open PR: https://github.com/iamdinhthuan/codex-skill/pull/2
 - Base branch: `main`
 - Unrelated worktree changes: root `SKILL.md` is deleted, and `.gitignore` has
   a local `docs/WORKLOG.md` ignore entry. They are not part of this refactor
@@ -48,6 +48,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Document install path and publish to main | Added README quick-install instructions for cloning the repo, syncing runtime into `~/.codex`, configuring named role agents, verifying counts/config, and using the workflow in another project. | `git diff --check`; `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and `global/agents/*.toml`; source/runtime `diff -q`; bootstrap smoke test; pushed branch and main. |
 | Done | Simplify workflow and remove external mail coordination | Removed the external mail coordination path from source/runtime guidance and local config, kept multi-agent coordination local to Codex subagents and the parent thread, documented research patterns from CrewAI, LangGraph, AutoGen, and `hoangnb24/skills`, pruned the default skill stack from 23/8 to 15/4, and synced the installed runtime. | `rg` found no removed coordination refs in source/runtime; `rg` found no removed skill refs in active routing/docs/runtime; source/runtime skill counts are 15 Codex and 4 Stitch; removed skill directories are absent in source/runtime; `tomllib` parsed config and agents; source/runtime `diff -q`; `git diff --check`; markdown fences balanced. |
 | Done | Align subagent config with OpenAI docs | Added required `name` and `description` fields to each specialist agent TOML, set read-only sandbox for PM/Architect/QA/Review, reduced `agents.max_depth` from 2 to 1 to avoid recursive fan-out, and carried over the lightweight Khuym worker-result labels `[DONE]`, `[BLOCKED]`, `[HANDOFF]`, and `[NOOP]`. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and specialist TOML files; schema check confirmed names/descriptions and read-only sandbox; source/runtime `diff -q`; `rg` confirmed `max_depth = 1`; `git diff --check`. |
+| Done | Add lightweight Khuym workflow lessons | Added only the useful low-ceremony lessons from `hoangnb24/skills`: validation before writing, structured handoffs, active parent-thread tending, project template propagation, and workflow invariant checks. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; temp runtime sync plus `bin/check-agent-workflow`; temp bootstrap invariant checks; `bash -n bin/check-agent-workflow bin/sync-codex-runtime bin/codex-bootstrap-project`; `tomllib` config/agent checks; `git diff --check`. |
 
 ## Decisions
 
@@ -77,6 +78,10 @@ finishes, changes direction, or leaves follow-up work.
   durable task state in `docs/WORKLOG.md`.
 - Keep unrelated worktree changes out of commits. The current `SKILL.md`
   deletion remains outside the Stitch branch commit scope.
+- Adopt lightweight lessons from `hoangnb24/skills` only when they strengthen
+  local Codex subagent coordination without adding a separate framework:
+  validate against repo reality before writing, require structured handoff
+  fields, and keep the parent thread actively tending spawned work.
 
 ## How To Update This Log
 

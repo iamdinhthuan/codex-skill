@@ -107,6 +107,8 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
+test -x ~/.codex/bin/check-agent-workflow
+~/.codex/bin/check-agent-workflow
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
 find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
@@ -133,8 +135,10 @@ When meaningful work starts, Codex should:
    subagents should be spawned for PM, Architect, Backend, Frontend, QA,
    Review, or Stitch design work.
 5. For non-trivial implementation, run review/discovery agents read-only first,
-   then assign writing implementation agents by exclusive file ownership.
-6. Keep the main agent focused on orchestration, handoff merge, conflict
+   validate the approach against repo reality, then assign writing
+   implementation agents by exclusive file ownership.
+6. Keep the main agent focused on orchestration, structured handoff merge,
+   conflict
    resolution, final verification, and work-log updates unless a file is shared,
    conflict-prone, or explicitly unassigned.
 7. After Backend, Frontend, Stitch frontend, or other writing agents finish,
@@ -162,6 +166,7 @@ architecture constraints, style rules, domain context, and deployment notes.
 cd ~/codex_skill
 git pull --ff-only
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```
 
 After updating, rerun the verification commands above.

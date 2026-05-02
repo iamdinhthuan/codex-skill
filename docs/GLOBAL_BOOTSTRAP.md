@@ -58,9 +58,10 @@ entries that point at those files. The intended specialist roles are:
   and Stitch-to-React work.
 
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
-read-only first, implementation agents write second with exclusive file
-ownership, and the main agent orchestrates, merges, verifies, and updates the
-work log. Coordination stays local to Codex subagents and the parent thread.
+read-only first, the main agent validates the approach against repo reality,
+implementation agents write second with exclusive file ownership, and the main
+agent orchestrates, merges structured handoffs, verifies, and updates the work
+log. Coordination stays local to Codex subagents and the parent thread.
 QA routes failures back to the owning writer for up to 3 focused repair cycles
 before Review or Blocked.
 
@@ -112,4 +113,5 @@ When this repo changes shared runtime files, re-sync them with:
 
 ```bash
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```

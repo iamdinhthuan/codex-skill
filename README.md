@@ -63,6 +63,7 @@ This installs:
 - `~/.codex/templates/`
 - `~/.codex/bin/codex-bootstrap-project`
 - `~/.codex/bin/sync-codex-runtime`
+- `~/.codex/bin/check-agent-workflow`
 
 ### 2. Configure Codex
 
@@ -144,6 +145,8 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
+test -x ~/.codex/bin/check-agent-workflow
+~/.codex/bin/check-agent-workflow
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
 find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
@@ -166,11 +169,12 @@ Codex should:
 2. Use PM, Architect, Backend, Frontend, QA, Review, and Stitch roles as needed.
 3. Spawn real subagents when work has independent role/file slices.
 4. Run read-only discovery/review agents first.
-5. Assign writing agents exclusive file ownership.
-6. Coordinate through the parent thread and record durable state in
+5. Validate the approach against repo reality before any writing agent edits.
+6. Assign writing agents exclusive file ownership.
+7. Coordinate through the parent thread with structured handoffs and record durable state in
    `docs/WORKLOG.md`.
-7. Send writing-agent handoffs through QA before final Review.
-8. Route QA failures back to the owning writer for up to 3 focused repair
+8. Send writing-agent handoffs through QA before final Review.
+9. Route QA failures back to the owning writer for up to 3 focused repair
    cycles before Review or Blocked.
 
 Manual project bootstrap:
@@ -186,6 +190,7 @@ After changing this repo on a client machine, refresh the installed runtime:
 cd ~/codex_skill
 git pull --ff-only
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```
 
 ## Source Attribution

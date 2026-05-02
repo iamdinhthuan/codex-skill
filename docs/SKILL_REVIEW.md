@@ -31,6 +31,10 @@ Repo decision:
   explicit file ownership, and `docs/WORKLOG.md`.
 - Do not require an external coordination server for normal multi-agent work.
 - Keep 15 Codex team skills and 4 Stitch skills.
+- Adopt only lightweight Khuym-style coordination invariants: validate the plan
+  against actual repo files before writing, require structured handoff fields,
+  and keep the parent thread tending spawned work until there is a real blocker
+  or final result.
 
 ## Kept Codex Team Skills
 

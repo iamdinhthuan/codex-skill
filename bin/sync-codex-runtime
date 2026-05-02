@@ -29,5 +29,6 @@ install -m 644 "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/P
 install -m 644 "$repo_dir/templates/PROJECT_AGENTS.md" "$codex_home/templates/PROJECT_AGENTS.md"
 install -m 755 "$repo_dir/bin/codex-bootstrap-project" "$codex_home/bin/codex-bootstrap-project"
 install -m 755 "$repo_dir/bin/sync-codex-runtime" "$codex_home/bin/sync-codex-runtime"
+install -m 755 "$repo_dir/bin/check-agent-workflow" "$codex_home/bin/check-agent-workflow"
 
 echo "synced Codex runtime to $codex_home"
