@@ -20,8 +20,8 @@ real code when requested, verify the result, and report only the useful output.
   blocked, and skipped work
 - `skills/codex-team-skills/` - Codex-adapted curated local copies of
   essential skills from `affaan-m/everything-claude-code`
-- `skills/stitch-skills/` - local copies of Google Stitch skills for
-  AI-assisted frontend design and Stitch-to-React workflows
+- `skills/frontend-skills/` - local copies of Taste Skill frontend/design
+  skills from `Leonxlnx/taste-skill`
 - `global/AGENTS.md` - global Codex instructions copied to `~/.codex/AGENTS.md`
 - `global/agents/` - named specialist subagent config copied to
   `~/.codex/agents/`
@@ -59,7 +59,7 @@ This installs:
 - `~/.codex/AGENTS.md`
 - `~/.codex/agents/*.toml`
 - `~/.codex/skills/codex-team-skills/`
-- `~/.codex/skills/stitch-skills/`
+- `~/.codex/skills/frontend-skills/`
 - `~/.codex/templates/`
 - `~/.codex/bin/codex-bootstrap-project`
 - `~/.codex/bin/sync-codex-runtime`
@@ -110,7 +110,7 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
+description = "Taste/Stitch frontend design specialist for premium UI direction, Stitch design-system prompts, image-generation references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 ```
@@ -148,7 +148,7 @@ test -x ~/.codex/bin/sync-codex-runtime
 test -x ~/.codex/bin/check-agent-workflow
 ~/.codex/bin/check-agent-workflow
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
+find ~/.codex/skills/frontend-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -156,8 +156,8 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected skill counts:
 
-- `codex-team-skills`: 15
-- `stitch-skills`: 4
+- `codex-team-skills`: 13
+- `frontend-skills`: 12
 
 ### 4. Use In A Project
 
@@ -208,14 +208,14 @@ Pinned source commit:
 The copied upstream license is available at
 `skills/codex-team-skills/LICENSE`.
 
-The Stitch skill files under `skills/stitch-skills/` come from:
+The Taste frontend skill files under `skills/frontend-skills/` come from:
 
-https://github.com/google-labs-code/stitch-skills
+https://github.com/Leonxlnx/taste-skill
 
 Pinned source commit:
 
 ```text
-6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140
+c8075169cd63d1430bbf492dd4ddd478ea9fa4da
 ```
 
-The copied upstream license is available at `skills/stitch-skills/LICENSE`.
+The copied upstream license is available at `skills/frontend-skills/LICENSE`.

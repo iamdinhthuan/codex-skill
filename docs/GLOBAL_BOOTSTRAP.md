@@ -2,7 +2,7 @@
 
 This repo is the source of the shared Codex operating model. The local machine
 also has a global install under `~/.codex` so new projects can inherit the team
-workflow, skill stack, Stitch frontend design rules, and task memory behavior.
+workflow, skill stack, Taste frontend design rules, and task memory behavior.
 
 ## What Loads Automatically
 
@@ -20,7 +20,7 @@ bin/sync-codex-runtime ~/.codex
 Global skills are installed at:
 
 - `~/.codex/skills/codex-team-skills/`
-- `~/.codex/skills/stitch-skills/`
+- `~/.codex/skills/frontend-skills/`
 
 These skills should be loaded only when their trigger matches the current task.
 
@@ -54,8 +54,8 @@ entries that point at those files. The intended specialist roles are:
   verification.
 - `review` for architecture, security, maintainability, and missing-test
   review.
-- `stitch-frontend` for Stitch design, prompt enhancement, `.stitch/DESIGN.md`,
-  and Stitch-to-React work.
+- `stitch-frontend` for Taste/Stitch design, image-generation references,
+  `.stitch/DESIGN.md`, and frontend conversion work.
 
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
 read-only first, the main agent validates the approach against repo reality,

@@ -4,7 +4,7 @@ Review date: 2026-05-02
 
 Scope:
 - `skills/codex-team-skills/`
-- `skills/stitch-skills/`
+- `skills/frontend-skills/`
 - global install paths under `~/.codex/skills/`
 
 ## Summary
@@ -30,7 +30,7 @@ Repo decision:
 - Keep orchestration local to Codex subagents, parent-thread handoffs,
   explicit file ownership, and `docs/WORKLOG.md`.
 - Do not require an external coordination server for normal multi-agent work.
-- Keep 15 Codex team skills and 4 Stitch skills.
+- Keep 13 Codex team skills and 12 Taste frontend skills.
 - Adopt only lightweight Khuym-style coordination invariants: validate the plan
   against actual repo files before writing, require structured handoff fields,
   and keep the parent thread tending spawned work until there is a real blocker
@@ -48,8 +48,6 @@ Repo decision:
 | `database-migrations` | Kept | Important for schema changes and rollback safety. |
 | `documentation-lookup` | Kept | Prevents stale framework/API assumptions. |
 | `e2e-testing` | Kept | Focused Playwright strategy for user-facing flows. |
-| `frontend-design` | Kept | Preserves visual quality when UI work matters. |
-| `frontend-patterns` | Kept | Common React/Next.js implementation guidance. |
 | `product-lens` | Kept | Lightweight product scoping without a full PRD lane. |
 | `search-first` | Kept | Encourages local and upstream research before building. |
 | `security-review` | Kept | Needed for auth, input, secrets, payments, and sensitive data. |
@@ -68,24 +66,34 @@ Repo decision:
 | `product-capability` | PRD-to-SRS lane is too heavy for the default repo scope. |
 | `safety-guard` | Duplicates Codex approval/sandbox/worklog rules in this repo. |
 | `team-builder` | Redundant now that core instructions define when to spawn specialists. |
+| `frontend-design` | Replaced by Taste Skill frontend design guidance. |
+| `frontend-patterns` | Replaced by Taste Skill frontend implementation guidance plus project-local patterns. |
 
-## Kept Stitch Skills
+## Kept Taste Frontend Skills
 
 | Skill | Status | Review Notes |
 | --- | --- | --- |
-| `design-md` | Kept | Useful for synthesizing `.stitch/DESIGN.md` from actual design context. |
-| `enhance-prompt` | Kept | Lightweight prompt improvement for Stitch work. |
-| `react:components` | Kept | Canonical Stitch-to-React conversion path. |
-| `stitch-design` | Kept | Main Stitch design entry point; falls back to local prompts/design docs when MCP is unavailable. |
+| `design-taste-frontend` | Kept | Default premium frontend design and implementation taste guidance. |
+| `gpt-taste` | Kept | Stricter Codex/GPT-oriented anti-generic layout and motion guidance. |
+| `image-to-code` | Kept | Image-first website workflow for visually important frontend work. |
+| `redesign-existing-projects` | Kept | Existing UI audit and redesign path. |
+| `high-end-visual-design` | Kept | Softer premium visual direction when requested. |
+| `minimalist-ui` | Kept | Restrained editorial/product UI direction. |
+| `industrial-brutalist-ui` | Kept | Specific brutalist visual direction when requested. |
+| `full-output-enforcement` | Kept | Guards against placeholder or partial UI output. |
+| `stitch-design-taste` | Kept | Taste-compatible Stitch design-system guidance. |
+| `imagegen-frontend-web` | Kept | Web reference image generation prompts. |
+| `imagegen-frontend-mobile` | Kept | Mobile reference image generation prompts. |
+| `brandkit` | Kept | Brand identity board generation prompts. |
 
 ## Removed Stitch Skills
 
 | Skill | Reason |
 | --- | --- |
-| `remotion` | Video walkthrough output is niche and not part of normal software delivery. |
-| `shadcn-ui` | Framework-specific and only useful in projects that already choose shadcn/ui. |
-| `stitch-loop` | Multi-page autonomous site loop is broader than the compact default workflow. |
-| `taste-design` | Highly opinionated design system layer; keep frontend design judgment local to the task. |
+| `design-md` | Replaced by `stitch-design-taste` and project-local `.stitch/DESIGN.md` guidance. |
+| `enhance-prompt` | Replaced by Taste Skill prompt/design-system guidance. |
+| `react:components` | Replaced by Taste Skill image-to-code and project-local frontend patterns. |
+| `stitch-design` | Replaced by `stitch-design-taste`. |
 
 ## Ongoing Rules
 

@@ -1,7 +1,7 @@
 # Client Setup
 
 Use this guide to make another machine read this repo and install the same
-Codex team workflow, lean skill set, Stitch design support, and project
+Codex team workflow, lean skill set, Taste frontend design support, and project
 work-log bootstrap.
 
 ## 1. Clone The Repo
@@ -74,7 +74,7 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
+description = "Taste/Stitch frontend design specialist for premium UI direction, Stitch design-system prompts, image-generation references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 
@@ -110,7 +110,7 @@ test -x ~/.codex/bin/sync-codex-runtime
 test -x ~/.codex/bin/check-agent-workflow
 ~/.codex/bin/check-agent-workflow
 find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
+find ~/.codex/skills/frontend-skills -maxdepth 2 -name SKILL.md | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -118,8 +118,8 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected counts:
 
-- `codex-team-skills`: 15
-- `stitch-skills`: 4
+- `codex-team-skills`: 13
+- `frontend-skills`: 12
 
 ## 5. Daily Usage
 

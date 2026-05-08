@@ -68,7 +68,7 @@ Rules:
 Load local skills only when triggered:
 
 - `skills/codex-team-skills/<skill>/SKILL.md`
-- `skills/stitch-skills/<skill>/SKILL.md`
+- `skills/frontend-skills/<skill>/SKILL.md`
 
 Default routing:
 
@@ -76,15 +76,17 @@ Default routing:
 - Architect -> `api-design`, `database-migrations`, `documentation-lookup`
 - Backend -> `backend-patterns`, `api-design`, `database-migrations`,
   `security-review`, `tdd-workflow`
-- Frontend -> `frontend-design`, `frontend-patterns`, `accessibility`,
-  `browser-qa`
-- Stitch frontend -> `stitch-design`, `enhance-prompt`, `design-md`,
-  `react:components`, `browser-qa`
+- Frontend -> `design-taste-frontend`, `gpt-taste`, `image-to-code`,
+  `redesign-existing-projects`, `accessibility`, `browser-qa`
+- Stitch frontend -> `stitch-design-taste`, `imagegen-frontend-web`,
+  `imagegen-frontend-mobile`, `brandkit`, `browser-qa`
 - QA -> `tdd-workflow`, `e2e-testing`, `browser-qa`, `verification-loop`
 - Review -> `coding-standards`, `security-review`, `verification-loop`
 
-Use Stitch skills only for design/Stitch work. If Stitch MCP is unavailable,
-continue with local prompts, `.stitch/DESIGN.md`, or React conversion.
+Use Taste frontend skills for visual UI direction, redesign, image-first
+frontend workflows, and Stitch design-system prompts. If Stitch MCP is
+unavailable, continue with local prompts, `.stitch/DESIGN.md`, or frontend code
+that can be produced from files.
 
 ## Local Coordination
 

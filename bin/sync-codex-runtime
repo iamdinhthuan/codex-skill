@@ -21,9 +21,12 @@ install -m 644 "$repo_dir/global/agents/qa.toml" "$codex_home/agents/qa.toml"
 install -m 644 "$repo_dir/global/agents/review.toml" "$codex_home/agents/review.toml"
 install -m 644 "$repo_dir/global/agents/stitch-frontend.toml" "$codex_home/agents/stitch-frontend.toml"
 
-rm -rf "$codex_home/skills/codex-team-skills" "$codex_home/skills/stitch-skills"
+rm -rf \
+  "$codex_home/skills/codex-team-skills" \
+  "$codex_home/skills/stitch-skills" \
+  "$codex_home/skills/frontend-skills"
 cp -R "$repo_dir/skills/codex-team-skills" "$codex_home/skills/codex-team-skills"
-cp -R "$repo_dir/skills/stitch-skills" "$codex_home/skills/stitch-skills"
+cp -R "$repo_dir/skills/frontend-skills" "$codex_home/skills/frontend-skills"
 
 install -m 644 "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/PROJECT_WORKLOG.md"
 install -m 644 "$repo_dir/templates/PROJECT_AGENTS.md" "$codex_home/templates/PROJECT_AGENTS.md"

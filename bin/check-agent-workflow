@@ -35,6 +35,12 @@ require_text "$repo_dir/global/AGENTS.md" "reusable local patterns"
 require_text "$repo_dir/global/AGENTS.md" "[DONE]"
 require_text "$repo_dir/global/AGENTS.md" "next action needed from the coordinator"
 require_text "$repo_dir/global/AGENTS.md" "keeps tending the work"
+require_text "$repo_dir/AGENTS.md" "skills/frontend-skills/<skill>/SKILL.md"
+require_text "$repo_dir/AGENTS.md" "design-taste-frontend"
+require_text "$repo_dir/AGENTS.md" "stitch-design-taste"
+require_text "$repo_dir/global/AGENTS.md" "~/.codex/skills/frontend-skills/<skill>/SKILL.md"
+require_text "$repo_dir/global/AGENTS.md" "design-taste-frontend"
+require_text "$repo_dir/global/AGENTS.md" "stitch-design-taste"
 
 require_text "$repo_dir/templates/PROJECT_AGENTS.md" "validate the approach against real project"
 require_text "$repo_dir/templates/PROJECT_AGENTS.md" "files and define the intended verification"
@@ -99,13 +105,13 @@ if [ -d "$codex_home" ]; then
   diff -q "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/PROJECT_WORKLOG.md" >/dev/null
 
   codex_skill_count="$(find "$codex_home/skills/codex-team-skills" -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
-  stitch_skill_count="$(find "$codex_home/skills/stitch-skills" -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
-  [ "$codex_skill_count" = "15" ] || {
-    printf 'expected 15 codex-team skills in %s, found %s\n' "$codex_home" "$codex_skill_count" >&2
+  frontend_skill_count="$(find "$codex_home/skills/frontend-skills" -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+  [ "$codex_skill_count" = "13" ] || {
+    printf 'expected 13 codex-team skills in %s, found %s\n' "$codex_home" "$codex_skill_count" >&2
     exit 1
   }
-  [ "$stitch_skill_count" = "4" ] || {
-    printf 'expected 4 stitch skills in %s, found %s\n' "$codex_home" "$stitch_skill_count" >&2
+  [ "$frontend_skill_count" = "12" ] || {
+    printf 'expected 12 frontend skills in %s, found %s\n' "$codex_home" "$frontend_skill_count" >&2
     exit 1
   }
 fi

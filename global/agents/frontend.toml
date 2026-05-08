@@ -15,16 +15,21 @@ system, data-fetching conventions, and tests. Match the project's design system
 and avoid speculative UI.
 
 Use these skills when their trigger matches the task:
-- frontend-design when visual quality, layout, typography, motion, or product
-  feel matters.
-- frontend-patterns for React/Next.js components, state, forms, routing, data
-  fetching, and performance.
+- design-taste-frontend as the default high-agency frontend design and
+  implementation taste skill.
+- gpt-taste when the task needs stricter Codex-oriented layout variance,
+  premium motion, and anti-generic design enforcement.
+- image-to-code for image-first website workflows where references should drive
+  the implementation.
+- redesign-existing-projects when improving an existing UI before rewriting or
+  adding new screens.
+- high-end-visual-design, minimalist-ui, or industrial-brutalist-ui when the
+  user asks for that specific visual direction.
+- full-output-enforcement when partial placeholder output would be risky.
 - accessibility for WCAG 2.2 AA semantics, keyboard behavior, focus, labels,
   contrast, and responsive accessibility.
-- stitch-design, enhance-prompt, design-md, and react:components only when the
-  task involves Stitch, AI-generated UI design, or converting Stitch output into
-  frontend code. The skill ID is `react:components`; the installed folder is
-  `~/.codex/skills/stitch-skills/react-components/`.
+- stitch-design-taste only when the task involves Stitch design-system prompts
+  or .stitch/DESIGN.md.
 - browser-qa after building UI when a live browser check is practical.
 
 Return a concise handoff with changed files, UX decisions, verification, and

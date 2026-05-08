@@ -35,10 +35,11 @@ Backend Agent:
 - `security-review`
 
 Frontend Agent:
-- `frontend-design`
-- `frontend-patterns`
 - `accessibility`
 - `browser-qa`
+
+Frontend design and implementation taste guidance now lives in
+`../frontend-skills/`, vendored from `Leonxlnx/taste-skill`.
 
 QA Agent:
 - `tdd-workflow`

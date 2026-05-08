@@ -49,6 +49,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Simplify workflow and remove external mail coordination | Removed the external mail coordination path from source/runtime guidance and local config, kept multi-agent coordination local to Codex subagents and the parent thread, documented research patterns from CrewAI, LangGraph, AutoGen, and `hoangnb24/skills`, pruned the default skill stack from 23/8 to 15/4, and synced the installed runtime. | `rg` found no removed coordination refs in source/runtime; `rg` found no removed skill refs in active routing/docs/runtime; source/runtime skill counts are 15 Codex and 4 Stitch; removed skill directories are absent in source/runtime; `tomllib` parsed config and agents; source/runtime `diff -q`; `git diff --check`; markdown fences balanced. |
 | Done | Align subagent config with OpenAI docs | Added required `name` and `description` fields to each specialist agent TOML, set read-only sandbox for PM/Architect/QA/Review, reduced `agents.max_depth` from 2 to 1 to avoid recursive fan-out, and carried over the lightweight Khuym worker-result labels `[DONE]`, `[BLOCKED]`, `[HANDOFF]`, and `[NOOP]`. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and specialist TOML files; schema check confirmed names/descriptions and read-only sandbox; source/runtime `diff -q`; `rg` confirmed `max_depth = 1`; `git diff --check`. |
 | Done | Add lightweight Khuym workflow lessons | Added only the useful low-ceremony lessons from `hoangnb24/skills`: validation before writing, structured handoffs, active parent-thread tending, project template propagation, and workflow invariant checks. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; temp runtime sync plus `bin/check-agent-workflow`; temp bootstrap invariant checks; `bash -n bin/check-agent-workflow bin/sync-codex-runtime bin/codex-bootstrap-project`; `tomllib` config/agent checks; `git diff --check`. |
+| Done | Replace frontend skills with Taste Skill | Replaced the old `frontend-design`/`frontend-patterns` skills and Google Stitch skill bundle with `Leonxlnx/taste-skill` under `skills/frontend-skills/`; routed Frontend/Stitch frontend agents to the new Taste skill names; updated docs, source attribution, counts, sync, and workflow checks; synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; repo/runtime counts are 13 Codex team skills and 12 frontend skills; old frontend/Stitch dirs absent in source/runtime; frontend skill frontmatter names matched expected set; active routing `rg` found no stale old skill refs; source/runtime `diff -q`; `bash -n`; temp runtime/bootstrap check; agent TOML parse; `git diff --check`. |
 
 ## Decisions
 
@@ -82,6 +83,9 @@ finishes, changes direction, or leaves follow-up work.
   local Codex subagent coordination without adding a separate framework:
   validate against repo reality before writing, require structured handoff
   fields, and keep the parent thread actively tending spawned work.
+- Frontend design guidance now comes from `Leonxlnx/taste-skill` in
+  `skills/frontend-skills/`; the old `frontend-design`, `frontend-patterns`,
+  and Google Stitch skill bundle are replaced.
 
 ## How To Update This Log
 
