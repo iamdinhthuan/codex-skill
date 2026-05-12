@@ -2,7 +2,7 @@
 
 This repo is the source of the shared Codex operating model. The local machine
 also has a global install under `~/.codex` so new projects can inherit the team
-workflow, skill stack, Taste frontend design rules, and task memory behavior.
+workflow, Superpowers plugin workflow, and task memory behavior.
 
 ## What Loads Automatically
 
@@ -17,12 +17,13 @@ Use the repo sync helper to install or refresh the runtime files:
 bin/sync-codex-runtime ~/.codex
 ```
 
-Global skills are installed at:
+Workflow skills come from the installed Superpowers plugin. This repo no longer
+installs skill bundles into:
 
 - `~/.codex/skills/codex-team-skills/`
 - `~/.codex/skills/frontend-skills/`
 
-These skills should be loaded only when their trigger matches the current task.
+Those old directories are removed during runtime sync.
 
 ## Specialist Subagents
 
@@ -54,7 +55,7 @@ entries that point at those files. The intended specialist roles are:
   verification.
 - `review` for architecture, security, maintainability, and missing-test
   review.
-- `stitch-frontend` for Taste/Stitch design, image-generation references,
+- `stitch-frontend` for frontend design prompts, visual references,
   `.stitch/DESIGN.md`, and frontend conversion work.
 
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run

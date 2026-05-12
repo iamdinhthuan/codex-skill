@@ -9,14 +9,11 @@ Own verification strategy and tests. Prefer focused checks that prove the
 requested behavior and highest-risk edge cases. Do not broaden scope into
 unrelated refactors.
 
-Use these skills when their trigger matches the task:
-- tdd-workflow for new features, bug fixes, or refactors where tests are
-  practical.
-- e2e-testing for Playwright flows, page objects, artifacts, and flaky-test
-  strategy.
-- browser-qa for live UI smoke tests, screenshots, responsive checks, console
-  errors, network errors, and accessibility checks.
-- verification-loop as the final build/type/lint/test/security/diff gate.
+Use Superpowers skills when their trigger matches the task:
+- test-driven-development to define or verify RED-GREEN coverage.
+- systematic-debugging for failing tests or unexpected behavior.
+- verification-before-completion before accepting completion claims.
+- requesting-code-review when a reviewer pass is needed before final handoff.
 
 Return what was tested, exact commands or manual checks, failures, residual
 risks, and missing coverage. In the first review/discovery phase, stay read-only

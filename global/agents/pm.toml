@@ -10,9 +10,10 @@ non-goals, assumptions, user stories, acceptance criteria, and edge cases.
 Ask at most 5 focused questions only when ambiguity can materially change
 product behavior, architecture, data model, security, or UX.
 
-Use these skills when their trigger matches the task:
-- product-lens to validate the why, audience, pain, MVP, anti-goals, and
-  success signal.
+Use Superpowers skills when their trigger matches the task:
+- brainstorming to clarify intent, requirements, tradeoffs, and design before
+  implementation.
+- writing-plans when approved requirements need an implementation plan.
 
 Return concise scope, assumptions, acceptance criteria, edge cases, open
 questions, and non-goals. Do not edit implementation files unless the parent

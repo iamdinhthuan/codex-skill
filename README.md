@@ -14,14 +14,10 @@ real code when requested, verify the result, and report only the useful output.
   its global Codex operating model
 - `docs/GLOBAL_BOOTSTRAP.md` - how global Codex instructions, skills, and
   project work logs are bootstrapped into new projects
-- `docs/SKILL_REVIEW.md` - review notes for each vendored skill and its
-  Codex-specific adaptations
+- `docs/SKILL_REVIEW.md` - review notes for moving from vendored skills to the
+  Superpowers plugin
 - `docs/WORKLOG.md` - durable task memory for completed, active, pending,
   blocked, and skipped work
-- `skills/codex-team-skills/` - Codex-adapted curated local copies of
-  essential skills from `affaan-m/everything-claude-code`
-- `skills/frontend-skills/` - local copies of Taste Skill frontend/design
-  skills from `Leonxlnx/taste-skill`
 - `global/AGENTS.md` - global Codex instructions copied to `~/.codex/AGENTS.md`
 - `global/agents/` - named specialist subagent config copied to
   `~/.codex/agents/`
@@ -37,14 +33,15 @@ ambiguous enough to affect product behavior, architecture, data, security, or
 UX, the PM role asks up to 5 focused questions; otherwise the team continues
 with explicit assumptions.
 
-The local skill set is intentionally small. Framework-specific, infrastructure,
-benchmarking, and skill-audit skills are excluded until repo evidence shows
-they are needed.
+The repo no longer owns a local skill set. Workflow skills come from the
+installed Superpowers plugin; this repo only keeps global prompts, agent
+configuration, templates, and verification scripts.
 
 ## Quick Install On Another Machine
 
 Use this when setting up a new machine with the same Codex team workflow,
-specialist subagents, skills, and project bootstrap templates.
+specialist subagents, Superpowers plugin workflow, and project bootstrap
+templates.
 
 ### 1. Clone And Install Runtime
 
@@ -58,16 +55,18 @@ This installs:
 
 - `~/.codex/AGENTS.md`
 - `~/.codex/agents/*.toml`
-- `~/.codex/skills/codex-team-skills/`
-- `~/.codex/skills/frontend-skills/`
 - `~/.codex/templates/`
 - `~/.codex/bin/codex-bootstrap-project`
 - `~/.codex/bin/sync-codex-runtime`
 - `~/.codex/bin/check-agent-workflow`
 
+It also removes old repo-managed skill bundles from `~/.codex/skills/`. Skills
+come from the installed Superpowers plugin.
+
 ### 2. Configure Codex
 
-Add or verify these blocks in `~/.codex/config.toml`:
+Install the Superpowers plugin from the Codex plugin marketplace, then add or
+verify these blocks in `~/.codex/config.toml`:
 
 ```toml
 [features]
@@ -110,7 +109,7 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Taste/Stitch frontend design specialist for premium UI direction, Stitch design-system prompts, image-generation references, .stitch/DESIGN.md, and frontend conversion."
+description = "Frontend design specialist for UI direction, design-system prompts, visual references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 ```
@@ -147,8 +146,9 @@ test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
 test -x ~/.codex/bin/check-agent-workflow
 ~/.codex/bin/check-agent-workflow
-find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/frontend-skills -maxdepth 2 -name SKILL.md | wc -l
+test ! -d ~/.codex/skills/codex-team-skills
+test ! -d ~/.codex/skills/frontend-skills
+find ~/.codex/plugins/cache/openai-curated/superpowers -path '*/skills/*/SKILL.md' | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -156,8 +156,7 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected skill counts:
 
-- `codex-team-skills`: 13
-- `frontend-skills`: 12
+- Superpowers plugin skills: 14
 
 ### 4. Use In A Project
 
@@ -193,29 +192,9 @@ bin/sync-codex-runtime ~/.codex
 ~/.codex/bin/check-agent-workflow
 ```
 
-## Source Attribution
+## Skill Source
 
-The curated skill files under `skills/codex-team-skills/` are adapted from:
+This repo no longer vendors skill files. Workflow skills come from the installed
+Superpowers plugin:
 
-https://github.com/affaan-m/everything-claude-code
-
-Pinned source commit:
-
-```text
-4e66b2882da9afb9747468b08a253ca2f09c85f3
-```
-
-The copied upstream license is available at
-`skills/codex-team-skills/LICENSE`.
-
-The Taste frontend skill files under `skills/frontend-skills/` come from:
-
-https://github.com/Leonxlnx/taste-skill
-
-Pinned source commit:
-
-```text
-c8075169cd63d1430bbf492dd4ddd478ea9fa4da
-```
-
-The copied upstream license is available at `skills/frontend-skills/LICENSE`.
+https://github.com/obra/superpowers

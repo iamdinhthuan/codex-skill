@@ -65,28 +65,41 @@ Rules:
 
 ## Skills
 
-Load local skills only when triggered:
+Use only skills provided by the installed Superpowers plugin. This repository
+does not vendor or install its own skill bundles.
 
-- `skills/codex-team-skills/<skill>/SKILL.md`
-- `skills/frontend-skills/<skill>/SKILL.md`
+Superpowers skills are supplied by the Codex plugin install, not by files under
+this repo. Relevant skills include:
+
+- `using-superpowers`
+- `brainstorming`
+- `writing-plans`
+- `using-git-worktrees`
+- `subagent-driven-development`
+- `executing-plans`
+- `dispatching-parallel-agents`
+- `test-driven-development`
+- `systematic-debugging`
+- `requesting-code-review`
+- `receiving-code-review`
+- `verification-before-completion`
+- `finishing-a-development-branch`
+- `writing-skills`
 
 Default routing:
 
-- PM -> `product-lens`
-- Architect -> `api-design`, `database-migrations`, `documentation-lookup`
-- Backend -> `backend-patterns`, `api-design`, `database-migrations`,
-  `security-review`, `tdd-workflow`
-- Frontend -> `design-taste-frontend`, `gpt-taste`, `image-to-code`,
-  `redesign-existing-projects`, `accessibility`, `browser-qa`
-- Stitch frontend -> `stitch-design-taste`, `imagegen-frontend-web`,
-  `imagegen-frontend-mobile`, `brandkit`, `browser-qa`
-- QA -> `tdd-workflow`, `e2e-testing`, `browser-qa`, `verification-loop`
-- Review -> `coding-standards`, `security-review`, `verification-loop`
-
-Use Taste frontend skills for visual UI direction, redesign, image-first
-frontend workflows, and Stitch design-system prompts. If Stitch MCP is
-unavailable, continue with local prompts, `.stitch/DESIGN.md`, or frontend code
-that can be produced from files.
+- Start of meaningful work -> `using-superpowers`.
+- Product/design clarification -> `brainstorming`.
+- Multi-step implementation planning -> `writing-plans`.
+- Isolated branch/workspace setup -> `using-git-worktrees`.
+- Implementation -> `subagent-driven-development` when independent subtasks can
+  run in this session; otherwise `executing-plans`.
+- Behavior changes and bug fixes -> `test-driven-development`.
+- Failures and unexpected behavior -> `systematic-debugging`.
+- Parallel investigation -> `dispatching-parallel-agents`.
+- Review and completion -> `requesting-code-review`,
+  `receiving-code-review`, `verification-before-completion`, and
+  `finishing-a-development-branch`.
 
 ## Local Coordination
 

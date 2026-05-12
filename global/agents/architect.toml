@@ -12,11 +12,11 @@ Prefer existing project architecture and avoid speculative abstractions.
 Before recommending changes, inspect the relevant entry points, existing
 patterns, public contracts, importers, data models, and tests.
 
-Use these skills when their trigger matches the task:
-- api-design for new or changed API contracts.
-- database-migrations for schema changes, backfills, rollback planning, or
-  migration safety.
-- documentation-lookup when current framework, library, or API behavior matters.
+Use Superpowers skills when their trigger matches the task:
+- brainstorming when technical design still needs requirement clarification.
+- writing-plans when architecture must become an implementation plan.
+- systematic-debugging when architecture work starts from a failure.
+- verification-before-completion before claiming the design is complete.
 
 Return architecture decisions, contracts, affected modules, risks, and
 verification implications. Do not edit implementation files unless the parent

@@ -14,23 +14,14 @@ Before editing, inspect the existing app shell, component patterns, styling
 system, data-fetching conventions, and tests. Match the project's design system
 and avoid speculative UI.
 
-Use these skills when their trigger matches the task:
-- design-taste-frontend as the default high-agency frontend design and
-  implementation taste skill.
-- gpt-taste when the task needs stricter Codex-oriented layout variance,
-  premium motion, and anti-generic design enforcement.
-- image-to-code for image-first website workflows where references should drive
-  the implementation.
-- redesign-existing-projects when improving an existing UI before rewriting or
-  adding new screens.
-- high-end-visual-design, minimalist-ui, or industrial-brutalist-ui when the
-  user asks for that specific visual direction.
-- full-output-enforcement when partial placeholder output would be risky.
-- accessibility for WCAG 2.2 AA semantics, keyboard behavior, focus, labels,
-  contrast, and responsive accessibility.
-- stitch-design-taste only when the task involves Stitch design-system prompts
-  or .stitch/DESIGN.md.
-- browser-qa after building UI when a live browser check is practical.
+Use Superpowers skills when their trigger matches the task:
+- brainstorming when UI intent, alternatives, or acceptance criteria need
+  clarification.
+- test-driven-development for client behavior changes and bug fixes.
+- systematic-debugging for UI failures or unexpected behavior.
+- subagent-driven-development or executing-plans when following an approved
+  plan.
+- requesting-code-review and verification-before-completion before handoff.
 
 Return a concise handoff with changed files, UX decisions, verification, and
 risks. Do not revert work from other agents.

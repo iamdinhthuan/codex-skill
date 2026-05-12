@@ -35,12 +35,14 @@ require_text "$repo_dir/global/AGENTS.md" "reusable local patterns"
 require_text "$repo_dir/global/AGENTS.md" "[DONE]"
 require_text "$repo_dir/global/AGENTS.md" "next action needed from the coordinator"
 require_text "$repo_dir/global/AGENTS.md" "keeps tending the work"
-require_text "$repo_dir/AGENTS.md" "skills/frontend-skills/<skill>/SKILL.md"
-require_text "$repo_dir/AGENTS.md" "design-taste-frontend"
-require_text "$repo_dir/AGENTS.md" "stitch-design-taste"
-require_text "$repo_dir/global/AGENTS.md" "~/.codex/skills/frontend-skills/<skill>/SKILL.md"
-require_text "$repo_dir/global/AGENTS.md" "design-taste-frontend"
-require_text "$repo_dir/global/AGENTS.md" "stitch-design-taste"
+require_text "$repo_dir/AGENTS.md" "Use only skills provided by the installed Superpowers plugin"
+require_text "$repo_dir/AGENTS.md" "using-superpowers"
+require_text "$repo_dir/AGENTS.md" "test-driven-development"
+require_text "$repo_dir/AGENTS.md" "verification-before-completion"
+require_text "$repo_dir/global/AGENTS.md" "Use only skills provided by the installed Superpowers plugin"
+require_text "$repo_dir/global/AGENTS.md" "using-superpowers"
+require_text "$repo_dir/global/AGENTS.md" "test-driven-development"
+require_text "$repo_dir/global/AGENTS.md" "verification-before-completion"
 
 require_text "$repo_dir/templates/PROJECT_AGENTS.md" "validate the approach against real project"
 require_text "$repo_dir/templates/PROJECT_AGENTS.md" "files and define the intended verification"
@@ -104,16 +106,45 @@ if [ -d "$codex_home" ]; then
   diff -q "$repo_dir/templates/PROJECT_AGENTS.md" "$codex_home/templates/PROJECT_AGENTS.md" >/dev/null
   diff -q "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/PROJECT_WORKLOG.md" >/dev/null
 
-  codex_skill_count="$(find "$codex_home/skills/codex-team-skills" -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
-  frontend_skill_count="$(find "$codex_home/skills/frontend-skills" -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
-  [ "$codex_skill_count" = "13" ] || {
-    printf 'expected 13 codex-team skills in %s, found %s\n' "$codex_home" "$codex_skill_count" >&2
-    exit 1
-  }
-  [ "$frontend_skill_count" = "12" ] || {
-    printf 'expected 12 frontend skills in %s, found %s\n' "$codex_home" "$frontend_skill_count" >&2
-    exit 1
-  }
+  for removed_dir in \
+    "$codex_home/skills/codex-team-skills" \
+    "$codex_home/skills/stitch-skills" \
+    "$codex_home/skills/frontend-skills"; do
+    if [ -e "$removed_dir" ]; then
+      printf 'removed skill bundle still exists: %s\n' "$removed_dir" >&2
+      exit 1
+    fi
+  done
 fi
+
+superpowers_root="$(find "$codex_home/plugins/cache/openai-curated/superpowers" -maxdepth 2 -path '*/skills' -type d 2>/dev/null | head -n 1 || true)"
+if [ -z "$superpowers_root" ]; then
+  printf 'Superpowers plugin skills not found under %s\n' "$codex_home/plugins/cache/openai-curated/superpowers" >&2
+  exit 1
+fi
+
+superpowers_skill_count="$(find "$superpowers_root" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+[ "$superpowers_skill_count" = "14" ] || {
+  printf 'expected 14 Superpowers skills in %s, found %s\n' "$superpowers_root" "$superpowers_skill_count" >&2
+  exit 1
+}
+
+for skill in \
+  using-superpowers \
+  brainstorming \
+  writing-plans \
+  using-git-worktrees \
+  subagent-driven-development \
+  executing-plans \
+  dispatching-parallel-agents \
+  test-driven-development \
+  systematic-debugging \
+  requesting-code-review \
+  receiving-code-review \
+  verification-before-completion \
+  finishing-a-development-branch \
+  writing-skills; do
+  require_file "$superpowers_root/$skill/SKILL.md"
+done
 
 echo "agent workflow checks passed"

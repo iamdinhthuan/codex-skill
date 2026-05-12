@@ -1,106 +1,65 @@
 # Skill Review
 
-Review date: 2026-05-02
+Review date: 2026-05-13
 
 Scope:
-- `skills/codex-team-skills/`
-- `skills/frontend-skills/`
-- global install paths under `~/.codex/skills/`
+- Installed Superpowers plugin under `~/.codex/plugins/cache/openai-curated/superpowers/`
+- Removed repo-managed skill bundles under `skills/`
+- Removed runtime skill bundles under `~/.codex/skills/`
 
 ## Summary
 
-The skill stack has been pruned for a lean Codex team workflow. The goal is to
-keep skills that reliably improve common product, backend, frontend, QA,
-security, documentation, and verification work, while removing skills that add
-heavy ceremony, duplicate core instructions, or target rare workflows.
-
-Research inputs:
-- `crewAIInc/crewAI`: role/task/process separation, sequential or manager-led
-  execution, and explicit task context.
-- `langchain-ai/langgraph`: stateful graph execution, durable state, human
-  oversight, and debuggable transitions.
-- `microsoft/autogen`: predefined agent/team patterns with clear run and
-  termination behavior.
-- `hoangnb24/skills`: local-first Codex coordination through subagents, parent
-  thread handoffs, validation gates, and local artifacts without an external
-  mail service. The useful lightweight carry-over is explicit worker result
-  labels such as `[DONE]`, `[BLOCKED]`, `[HANDOFF]`, and `[NOOP]`.
+This repo no longer vendors or installs its own skill set. The workflow now uses
+100% of the installed Superpowers plugin skills for planning, TDD, debugging,
+subagent execution, review, and completion.
 
 Repo decision:
-- Keep orchestration local to Codex subagents, parent-thread handoffs,
-  explicit file ownership, and `docs/WORKLOG.md`.
-- Do not require an external coordination server for normal multi-agent work.
-- Keep 13 Codex team skills and 12 Taste frontend skills.
-- Adopt only lightweight Khuym-style coordination invariants: validate the plan
-  against actual repo files before writing, require structured handoff fields,
-  and keep the parent thread tending spawned work until there is a real blocker
-  or final result.
+- Keep global prompts, specialist agent TOML files, templates, and runtime
+  helper scripts in this repo.
+- Do not copy skill bundles from this repo into `~/.codex/skills/`.
+- Remove old `codex-team-skills`, `stitch-skills`, and `frontend-skills`
+  runtime directories during sync.
+- Verify that the Superpowers plugin exposes 14 `SKILL.md` files before
+  claiming the runtime is ready.
 
-## Kept Codex Team Skills
+## Superpowers Skills
 
-| Skill | Status | Review Notes |
-| --- | --- | --- |
-| `accessibility` | Kept | Practical frontend quality gate for WCAG 2.2 AA work. |
-| `api-design` | Kept | Common backend/API design guidance with low ceremony. |
-| `backend-patterns` | Kept | Useful for Node, Express, and Next.js backend work. |
-| `browser-qa` | Kept | Needed for real UI/browser verification after frontend changes. |
-| `coding-standards` | Kept | Lightweight review lens for readability and maintainability. |
-| `database-migrations` | Kept | Important for schema changes and rollback safety. |
-| `documentation-lookup` | Kept | Prevents stale framework/API assumptions. |
-| `e2e-testing` | Kept | Focused Playwright strategy for user-facing flows. |
-| `product-lens` | Kept | Lightweight product scoping without a full PRD lane. |
-| `search-first` | Kept | Encourages local and upstream research before building. |
-| `security-review` | Kept | Needed for auth, input, secrets, payments, and sensitive data. |
-| `tdd-workflow` | Kept | Useful when tests can drive or protect behavior. |
-| `verification-loop` | Kept | Final evidence gate for commands, diff, and residual risk. |
-
-## Removed Codex Team Skills
-
-| Skill | Reason |
+| Skill | Use |
 | --- | --- |
-| `ai-regression-testing` | Too niche for the default bundle; overlaps with QA plus `verification-loop`. |
-| `blueprint` | Heavy multi-session planning lane; not needed for the compact workflow. |
-| `council` | Adds role ceremony for rare tradeoff calls; main-thread judgment is enough. |
-| `gateguard` | Duplicates the core "read before editing" rule and slows routine work. |
-| `hexagonal-architecture` | Specialized architecture pattern; use `backend-patterns` and `api-design` instead. |
-| `product-capability` | PRD-to-SRS lane is too heavy for the default repo scope. |
-| `safety-guard` | Duplicates Codex approval/sandbox/worklog rules in this repo. |
-| `team-builder` | Redundant now that core instructions define when to spawn specialists. |
-| `frontend-design` | Replaced by Taste Skill frontend design guidance. |
-| `frontend-patterns` | Replaced by Taste Skill frontend implementation guidance plus project-local patterns. |
+| `using-superpowers` | Entry point for skill selection discipline. |
+| `brainstorming` | Requirement and design clarification before implementation. |
+| `writing-plans` | Detailed implementation plans after an approved design. |
+| `using-git-worktrees` | Isolated workspaces for feature work. |
+| `subagent-driven-development` | Plan execution with fresh subagents and review stages. |
+| `executing-plans` | Sequential plan execution with checkpoints. |
+| `dispatching-parallel-agents` | Parallel investigation for independent tasks. |
+| `test-driven-development` | RED-GREEN-REFACTOR implementation discipline. |
+| `systematic-debugging` | Root-cause debugging before fixes. |
+| `requesting-code-review` | Structured review before merge or handoff. |
+| `receiving-code-review` | Technical handling of review feedback. |
+| `verification-before-completion` | Evidence gate before completion claims. |
+| `finishing-a-development-branch` | Final branch integration workflow. |
+| `writing-skills` | Creating or editing skills when explicitly needed. |
 
-## Kept Taste Frontend Skills
+## Removed Repo-Managed Skills
 
-| Skill | Status | Review Notes |
-| --- | --- | --- |
-| `design-taste-frontend` | Kept | Default premium frontend design and implementation taste guidance. |
-| `gpt-taste` | Kept | Stricter Codex/GPT-oriented anti-generic layout and motion guidance. |
-| `image-to-code` | Kept | Image-first website workflow for visually important frontend work. |
-| `redesign-existing-projects` | Kept | Existing UI audit and redesign path. |
-| `high-end-visual-design` | Kept | Softer premium visual direction when requested. |
-| `minimalist-ui` | Kept | Restrained editorial/product UI direction. |
-| `industrial-brutalist-ui` | Kept | Specific brutalist visual direction when requested. |
-| `full-output-enforcement` | Kept | Guards against placeholder or partial UI output. |
-| `stitch-design-taste` | Kept | Taste-compatible Stitch design-system guidance. |
-| `imagegen-frontend-web` | Kept | Web reference image generation prompts. |
-| `imagegen-frontend-mobile` | Kept | Mobile reference image generation prompts. |
-| `brandkit` | Kept | Brand identity board generation prompts. |
-
-## Removed Stitch Skills
-
-| Skill | Reason |
+| Removed bundle | Reason |
 | --- | --- |
-| `design-md` | Replaced by `stitch-design-taste` and project-local `.stitch/DESIGN.md` guidance. |
-| `enhance-prompt` | Replaced by Taste Skill prompt/design-system guidance. |
-| `react:components` | Replaced by Taste Skill image-to-code and project-local frontend patterns. |
-| `stitch-design` | Replaced by `stitch-design-taste`. |
+| `skills/codex-team-skills/` | Replaced by Superpowers plugin workflows. |
+| `skills/frontend-skills/` | Replaced by Superpowers plugin workflows and project-local UI patterns. |
+| `skills/stitch-skills/` | Already removed; kept absent. |
 
-## Ongoing Rules
+## Verification Rule
 
-- Add a skill only when it removes repeated real work or prevents a repeated
-  failure mode.
-- Prefer one broad, reliable skill over several overlapping niche skills.
-- Keep role routing in `AGENTS.md`, `global/AGENTS.md`, and
-  `global/agents/*.toml` aligned with the installed skill set.
-- After any skill add/remove, run `bin/sync-codex-runtime ~/.codex` and verify
-  repo/runtime skill counts.
+After changing skill routing or runtime sync, run:
+
+```bash
+bin/sync-codex-runtime ~/.codex
+bin/check-agent-workflow ~/.codex
+```
+
+The check must confirm:
+- old repo-managed skill directories are absent in runtime
+- Superpowers plugin exists
+- exactly 14 Superpowers `SKILL.md` files are present
+- expected specialist agent TOML files still parse and sync

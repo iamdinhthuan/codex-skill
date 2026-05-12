@@ -50,6 +50,7 @@ finishes, changes direction, or leaves follow-up work.
 | Done | Align subagent config with OpenAI docs | Added required `name` and `description` fields to each specialist agent TOML, set read-only sandbox for PM/Architect/QA/Review, reduced `agents.max_depth` from 2 to 1 to avoid recursive fan-out, and carried over the lightweight Khuym worker-result labels `[DONE]`, `[BLOCKED]`, `[HANDOFF]`, and `[NOOP]`. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `tomllib` parsed `~/.codex/config.toml` and specialist TOML files; schema check confirmed names/descriptions and read-only sandbox; source/runtime `diff -q`; `rg` confirmed `max_depth = 1`; `git diff --check`. |
 | Done | Add lightweight Khuym workflow lessons | Added only the useful low-ceremony lessons from `hoangnb24/skills`: validation before writing, structured handoffs, active parent-thread tending, project template propagation, and workflow invariant checks. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; temp runtime sync plus `bin/check-agent-workflow`; temp bootstrap invariant checks; `bash -n bin/check-agent-workflow bin/sync-codex-runtime bin/codex-bootstrap-project`; `tomllib` config/agent checks; `git diff --check`. |
 | Done | Replace frontend skills with Taste Skill | Replaced the old `frontend-design`/`frontend-patterns` skills and Google Stitch skill bundle with `Leonxlnx/taste-skill` under `skills/frontend-skills/`; routed Frontend/Stitch frontend agents to the new Taste skill names; updated docs, source attribution, counts, sync, and workflow checks; synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; repo/runtime counts are 13 Codex team skills and 12 frontend skills; old frontend/Stitch dirs absent in source/runtime; frontend skill frontmatter names matched expected set; active routing `rg` found no stale old skill refs; source/runtime `diff -q`; `bash -n`; temp runtime/bootstrap check; agent TOML parse; `git diff --check`. |
+| Done | Use only Superpowers plugin skills | Removed repo-managed skill bundles, stopped syncing skills into `~/.codex/skills/`, routed all skill guidance through the installed Superpowers plugin, and updated verification to require the plugin's 14 skills. Synced runtime to `~/.codex`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; old runtime skill bundles absent; Superpowers plugin exposes 14 `SKILL.md` files; active-doc stale-reference search only found intentional absence/removal references; source/runtime `diff -q`; `bash -n`; agent TOML parse; bootstrap smoke test; `git diff --check`. |
 
 ## Decisions
 
@@ -59,8 +60,8 @@ finishes, changes direction, or leaves follow-up work.
   architecture constraints, or domain context.
 - Bootstrap `docs/WORKLOG.md` automatically for meaningful work in new projects
   so task state survives across conversations.
-- Keep vendored skill sources under `skills/` with source attribution and pinned
-  commits. Do not silently replace them with floating upstream content.
+- Do not vendor skill sources in this repo. Workflow skills come from the
+  installed Superpowers plugin.
 - Do not assume Stitch MCP is available. If MCP tools are missing, continue with
   local prompt/design-system/React conversion work that can be done from files.
 - Keep shared prompts compact. Put only the durable workflow, routing, worklog,
@@ -83,9 +84,9 @@ finishes, changes direction, or leaves follow-up work.
   local Codex subagent coordination without adding a separate framework:
   validate against repo reality before writing, require structured handoff
   fields, and keep the parent thread actively tending spawned work.
-- Frontend design guidance now comes from `Leonxlnx/taste-skill` in
-  `skills/frontend-skills/`; the old `frontend-design`, `frontend-patterns`,
-  and Google Stitch skill bundle are replaced.
+- The previous `codex-team-skills`, `frontend-skills`, and `stitch-skills`
+  bundles are removed. Runtime sync deletes those directories and relies on the
+  installed Superpowers plugin.
 
 ## How To Update This Log
 

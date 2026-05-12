@@ -1,8 +1,8 @@
 # Client Setup
 
 Use this guide to make another machine read this repo and install the same
-Codex team workflow, lean skill set, Taste frontend design support, and project
-work-log bootstrap.
+Codex team workflow, Superpowers plugin workflow, and project work-log
+bootstrap.
 
 ## 1. Clone The Repo
 
@@ -20,8 +20,9 @@ git switch codex/add-stitch-skills
 
 ## 2. Install Into Codex Home
 
-The install copies shared instructions, named specialist agents, skill bundles,
-templates, and helper scripts into `~/.codex`.
+The install copies shared instructions, named specialist agents, templates, and
+helper scripts into `~/.codex`. It removes old repo-managed skill bundles; skill
+workflow comes from the installed Superpowers plugin.
 
 ```bash
 bin/sync-codex-runtime ~/.codex
@@ -29,9 +30,8 @@ bin/sync-codex-runtime ~/.codex
 
 ## 3. Configure Codex
 
-Add or verify these entries in `~/.codex/config.toml`. Codex can use the skills
-without MCP; Stitch design generation is the only optional MCP server shown
-here.
+Install the Superpowers plugin from the Codex plugin marketplace, then add or
+verify these entries in `~/.codex/config.toml`.
 
 ```toml
 [features]
@@ -74,7 +74,7 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Taste/Stitch frontend design specialist for premium UI direction, Stitch design-system prompts, image-generation references, .stitch/DESIGN.md, and frontend conversion."
+description = "Frontend design specialist for UI direction, design-system prompts, visual references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 
@@ -109,8 +109,9 @@ test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
 test -x ~/.codex/bin/check-agent-workflow
 ~/.codex/bin/check-agent-workflow
-find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/frontend-skills -maxdepth 2 -name SKILL.md | wc -l
+test ! -d ~/.codex/skills/codex-team-skills
+test ! -d ~/.codex/skills/frontend-skills
+find ~/.codex/plugins/cache/openai-curated/superpowers -path '*/skills/*/SKILL.md' | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -118,8 +119,7 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected counts:
 
-- `codex-team-skills`: 13
-- `frontend-skills`: 12
+- Superpowers plugin skills: 14
 
 ## 5. Daily Usage
 
@@ -175,7 +175,8 @@ After updating, rerun the verification commands above.
 
 - If Codex does not follow the team workflow, verify `~/.codex/AGENTS.md`
   exists and restart the Codex session.
-- If a skill is missing, verify the expected `SKILL.md` counts.
+- If a skill is missing, verify the Superpowers plugin is installed and exposes
+  14 `SKILL.md` files.
 - If Stitch generation fails, verify `STITCH_API_KEY` is set and the Stitch MCP
   server is configured.
 - If a project should not create local docs, tell Codex the task is read-only.
