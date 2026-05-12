@@ -24,7 +24,7 @@ start.
   `~/.codex/plugins/cache/openai-curated/superpowers/`
 - Expected Superpowers skill count: `14`
 - Recommended coding plugins: `superpowers`, `github`, `build-ios-apps`,
-  `browser-use` or `chrome`, and `computer-use`.
+  `codex-security`, `browser-use` or `chrome`, and `computer-use`.
 - Removed repo-managed skill bundles: `codex-team-skills`, `frontend-skills`,
   and `stitch-skills`.
 - Unrelated worktree changes: root `SKILL.md` is deleted, and `.gitignore` has
@@ -36,7 +36,7 @@ start.
 | Status | Task | Notes | Verification |
 | --- | --- | --- | --- |
 | Done | Use only Superpowers plugin skills | Removed repo-managed skill bundles, stopped syncing skills into `~/.codex/skills/`, routed all skill guidance through the installed Superpowers plugin, and updated verification to require the plugin's 14 skills. Synced runtime to `~/.codex`. Commit `83df4d4`. | `bin/sync-codex-runtime ~/.codex`; `bin/check-agent-workflow ~/.codex`; old runtime skill bundles absent; Superpowers plugin exposes 14 `SKILL.md` files; source/runtime `diff -q`; `bash -n`; agent TOML parse; bootstrap smoke test; `git diff --check`. |
-| Done | Set recommended coding plugin baseline | Documented the recommended plugin set: `superpowers` for workflow, `github` for repo/PR/CI, `build-ios-apps` for iOS/SwiftUI, `browser-use` or `chrome` for browser QA, and `computer-use` for desktop/manual control. Enabled `build-ios-apps` in local `~/.codex/config.toml`. | `bin/check-agent-workflow ~/.codex`; plugin config parsed by `tomllib`; `git diff --check`. |
+| Done | Set recommended coding plugin baseline | Documented the recommended plugin set: `superpowers` for workflow, `github` for repo/PR/CI, `build-ios-apps` for iOS/SwiftUI, `codex-security` for appsec scans/review, `browser-use` or `chrome` for browser QA, and `computer-use` for desktop/manual control. Enabled `build-ios-apps` in local `~/.codex/config.toml`; `codex-security` was already enabled by the user. | `bin/check-agent-workflow ~/.codex`; plugin config parsed by `tomllib`; `git diff --check`. |
 | Done | Replace frontend skills with Taste Skill | Temporary step that replaced local frontend/Stitch skills with `Leonxlnx/taste-skill`. This has been superseded by the Superpowers-only decision. Commit `63b0489`. | Previously verified repo/runtime counts and frontmatter names; no longer the active skill model. |
 | Done | Add lightweight workflow safeguards | Added validation-before-writing, structured handoffs, parent-thread tending, project template propagation, and `bin/check-agent-workflow`. Commit `f1a6618`. | Runtime sync, workflow check, temp bootstrap checks, TOML checks, and `git diff --check`. |
 | Done | Simplify Codex team workflow | Removed external coordination/mail assumptions, kept local parent-thread/subagent coordination, pruned old skill stack, and aligned subagent config with OpenAI docs. Commit `91f2367`. | Runtime sync, stale-reference search, source/runtime diffs, TOML parse, skill count checks at the time, and `git diff --check`. |
@@ -52,9 +52,9 @@ start.
 - Do not vendor skill sources in this repo. Workflow skills come from the
   installed Superpowers plugin.
 - Keep the coding plugin baseline focused: `superpowers`, `github`,
-  `build-ios-apps`, browser QA via `browser-use` or `chrome`, and
-  `computer-use`. Keep `spreadsheets` and `presentations` off unless needed for
-  those file types.
+  `build-ios-apps`, `codex-security`, browser QA via `browser-use` or
+  `chrome`, and `computer-use`. Keep `spreadsheets` and `presentations` off
+  unless needed for those file types.
 - Runtime sync must delete old repo-managed skill directories:
   `~/.codex/skills/codex-team-skills`,
   `~/.codex/skills/frontend-skills`, and

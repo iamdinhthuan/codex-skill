@@ -30,6 +30,8 @@ Recommended coding plugins:
 - `superpowers@openai-curated` for the core workflow.
 - `github@openai-curated` for repo, PR, CI, and publish workflows.
 - `build-ios-apps@openai-curated` for iOS and SwiftUI work.
+- `codex-security@openai-curated` for security scans, threat modeling,
+  finding validation, attack-path analysis, and security finding fixes.
 - `browser-use@openai-bundled` or `chrome@openai-bundled` for frontend/browser
   QA.
 - `computer-use@openai-bundled` for desktop or simulator workflows that need

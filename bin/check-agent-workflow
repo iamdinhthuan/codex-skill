@@ -95,6 +95,7 @@ if config_path.exists():
         "superpowers@openai-curated",
         "github@openai-curated",
         "build-ios-apps@openai-curated",
+        "codex-security@openai-curated",
         "computer-use@openai-bundled",
     ]
     for name in required_plugins:
@@ -169,6 +170,28 @@ for skill in \
   finishing-a-development-branch \
   writing-skills; do
   require_file "$superpowers_root/$skill/SKILL.md"
+done
+
+security_root="$(find "$codex_home/plugins/cache/openai-curated/codex-security" -maxdepth 2 -path '*/skills' -type d 2>/dev/null | head -n 1 || true)"
+if [ -z "$security_root" ]; then
+  printf 'Codex Security plugin skills not found under %s\n' "$codex_home/plugins/cache/openai-curated/codex-security" >&2
+  exit 1
+fi
+
+security_skill_count="$(find "$security_root" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+[ "$security_skill_count" = "6" ] || {
+  printf 'expected 6 Codex Security skills in %s, found %s\n' "$security_root" "$security_skill_count" >&2
+  exit 1
+}
+
+for skill in \
+  security-scan \
+  threat-model \
+  finding-discovery \
+  validation \
+  attack-path-analysis \
+  fix-finding; do
+  require_file "$security_root/$skill/SKILL.md"
 done
 
 echo "agent workflow checks passed"

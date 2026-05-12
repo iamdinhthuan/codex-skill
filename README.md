@@ -122,6 +122,9 @@ enabled = true
 [plugins."build-ios-apps@openai-curated"]
 enabled = true
 
+[plugins."codex-security@openai-curated"]
+enabled = true
+
 [plugins."browser-use@openai-bundled"]
 enabled = true
 
@@ -143,6 +146,7 @@ Recommended coding plugin set:
 - Core workflow: `superpowers`
 - Repo, PR, and CI: `github`
 - iOS and SwiftUI: `build-ios-apps`
+- Security review and scans: `codex-security`
 - Frontend/browser QA: `browser-use` or `chrome`
 - Desktop/manual app control: `computer-use`
 
@@ -189,6 +193,7 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 Expected skill counts:
 
 - Superpowers plugin skills: 14
+- Codex Security plugin skills: 6
 
 ### 4. Use In A Project
 
