@@ -78,6 +78,30 @@ description = "Frontend design specialist for UI direction, design-system prompt
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 
+[plugins."superpowers@openai-curated"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."build-ios-apps@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = false
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = false
+
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "@playwright/mcp@latest"]
@@ -86,6 +110,14 @@ args = ["-y", "@playwright/mcp@latest"]
 url = "https://stitch.googleapis.com/mcp"
 env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
 ```
+
+Recommended coding plugin set:
+
+- Core workflow: `superpowers`
+- Repo, PR, and CI: `github`
+- iOS and SwiftUI: `build-ios-apps`
+- Frontend/browser QA: `browser-use` or `chrome`
+- Desktop/manual app control: `computer-use`
 
 Set the API key in the shell environment used to launch Codex:
 

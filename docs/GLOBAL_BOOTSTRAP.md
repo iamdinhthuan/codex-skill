@@ -25,6 +25,19 @@ installs skill bundles into:
 
 Those old directories are removed during runtime sync.
 
+Recommended coding plugins:
+
+- `superpowers@openai-curated` for the core workflow.
+- `github@openai-curated` for repo, PR, CI, and publish workflows.
+- `build-ios-apps@openai-curated` for iOS and SwiftUI work.
+- `browser-use@openai-bundled` or `chrome@openai-bundled` for frontend/browser
+  QA.
+- `computer-use@openai-bundled` for desktop or simulator workflows that need
+  manual app control.
+
+Keep productivity plugins such as `spreadsheets` and `presentations` disabled
+unless the task is specifically about those file types.
+
 ## Specialist Subagents
 
 Codex supports named agent roles through `~/.codex/config.toml`. This repo

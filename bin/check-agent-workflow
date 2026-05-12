@@ -90,6 +90,30 @@ if config_path.exists():
             raise SystemExit(f"{config_path} is missing agents.{name}")
         if entry.get("config_file") != f"agents/{name}.toml":
             raise SystemExit(f"{config_path} has wrong config_file for {name}")
+    plugins = config.get("plugins", {})
+    required_plugins = [
+        "superpowers@openai-curated",
+        "github@openai-curated",
+        "build-ios-apps@openai-curated",
+        "computer-use@openai-bundled",
+    ]
+    for name in required_plugins:
+        if plugins.get(name, {}).get("enabled") is not True:
+            raise SystemExit(f"{config_path} must enable plugin {name}")
+    browser_plugins = [
+        "browser-use@openai-bundled",
+        "chrome@openai-bundled",
+    ]
+    if not any(plugins.get(name, {}).get("enabled") is True for name in browser_plugins):
+        raise SystemExit(
+            f"{config_path} must enable browser-use or chrome for browser QA"
+        )
+    for name in [
+        "spreadsheets@openai-primary-runtime",
+        "presentations@openai-primary-runtime",
+    ]:
+        if plugins.get(name, {}).get("enabled") is True:
+            raise SystemExit(f"{config_path} should keep non-coding plugin {name} disabled")
 PY
 
 if [ -d "$codex_home" ]; then

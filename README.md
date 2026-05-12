@@ -112,7 +112,39 @@ nickname_candidates = ["Review", "Guard", "Auditor"]
 description = "Frontend design specialist for UI direction, design-system prompts, visual references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
+
+[plugins."superpowers@openai-curated"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."build-ios-apps@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = false
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = false
 ```
+
+Recommended coding plugin set:
+
+- Core workflow: `superpowers`
+- Repo, PR, and CI: `github`
+- iOS and SwiftUI: `build-ios-apps`
+- Frontend/browser QA: `browser-use` or `chrome`
+- Desktop/manual app control: `computer-use`
 
 Optional MCP servers:
 
