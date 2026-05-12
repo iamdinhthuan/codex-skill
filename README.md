@@ -150,23 +150,9 @@ Recommended coding plugin set:
 - Frontend/browser QA: `browser-use` or `chrome`
 - Desktop/manual app control: `computer-use`
 
-Optional MCP servers:
-
-```toml
-[mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp@latest"]
-
-[mcp_servers.stitch]
-url = "https://stitch.googleapis.com/mcp"
-env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
-```
-
-If using Stitch, set the API key in the shell that launches Codex:
-
-```bash
-export STITCH_API_KEY="your-key"
-```
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
 
 ### 3. Verify Install
 

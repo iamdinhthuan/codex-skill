@@ -105,13 +105,6 @@ enabled = false
 [plugins."presentations@openai-primary-runtime"]
 enabled = false
 
-[mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp@latest"]
-
-[mcp_servers.stitch]
-url = "https://stitch.googleapis.com/mcp"
-env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
 ```
 
 Recommended coding plugin set:
@@ -123,11 +116,9 @@ Recommended coding plugin set:
 - Frontend/browser QA: `browser-use` or `chrome`
 - Desktop/manual app control: `computer-use`
 
-Set the API key in the shell environment used to launch Codex:
-
-```bash
-export STITCH_API_KEY="your-key"
-```
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
 
 Do not commit secrets into this repo or into project files.
 
@@ -214,6 +205,4 @@ After updating, rerun the verification commands above.
   exists and restart the Codex session.
 - If a skill is missing, verify the Superpowers plugin is installed and exposes
   14 `SKILL.md` files.
-- If Stitch generation fails, verify `STITCH_API_KEY` is set and the Stitch MCP
-  server is configured.
 - If a project should not create local docs, tell Codex the task is read-only.

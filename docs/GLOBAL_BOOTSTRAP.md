@@ -40,6 +40,10 @@ Recommended coding plugins:
 Keep productivity plugins such as `spreadsheets` and `presentations` disabled
 unless the task is specifically about those file types.
 
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
+
 ## Specialist Subagents
 
 Codex supports named agent roles through `~/.codex/config.toml`. This repo
