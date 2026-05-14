@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_dir="$(cd -- "$script_dir/.." && pwd)"
+codex_home="${1:-${CODEX_HOME:-$HOME/.codex}}"
+
+require_text() {
+  local file="$1"
+  local text="$2"
+
+  if ! grep -Fq -- "$text" "$file"; then
+    printf 'missing required text in %s: %s\n' "$file" "$text" >&2
+    exit 1
+  fi
+}
+
+require_file() {
+  local file="$1"
+
+  if [ ! -f "$file" ]; then
+    printf 'missing required file: %s\n' "$file" >&2
+    exit 1
+  fi
+}
+
+require_text "$repo_dir/AGENTS.md" "validates the proposed approach against repo reality"
+require_text "$repo_dir/AGENTS.md" "reusable local patterns"
+require_text "$repo_dir/AGENTS.md" "[DONE]"
+require_text "$repo_dir/AGENTS.md" "next action needed from the coordinator"
+require_text "$repo_dir/AGENTS.md" "keeps tending the work"
+
+require_text "$repo_dir/global/AGENTS.md" "validates the proposed approach against repo reality"
+require_text "$repo_dir/global/AGENTS.md" "reusable local patterns"
+require_text "$repo_dir/global/AGENTS.md" "[DONE]"
+require_text "$repo_dir/global/AGENTS.md" "next action needed from the coordinator"
+require_text "$repo_dir/global/AGENTS.md" "keeps tending the work"
+require_text "$repo_dir/AGENTS.md" "Use only skills provided by the installed Superpowers plugin"
+require_text "$repo_dir/AGENTS.md" "using-superpowers"
+require_text "$repo_dir/AGENTS.md" "test-driven-development"
+require_text "$repo_dir/AGENTS.md" "verification-before-completion"
+require_text "$repo_dir/global/AGENTS.md" "Use only skills provided by the installed Superpowers plugin"
+require_text "$repo_dir/global/AGENTS.md" "using-superpowers"
+require_text "$repo_dir/global/AGENTS.md" "test-driven-development"
+require_text "$repo_dir/global/AGENTS.md" "verification-before-completion"
+
+require_text "$repo_dir/templates/PROJECT_AGENTS.md" "validate the approach against real project"
+require_text "$repo_dir/templates/PROJECT_AGENTS.md" "files and define the intended verification"
+require_text "$repo_dir/templates/PROJECT_AGENTS.md" "next coordinator action"
+require_text "$repo_dir/templates/PROJECT_WORKLOG.md" "structured handoffs"
+require_text "$repo_dir/templates/PROJECT_WORKLOG.md" "next coordinator action"
+
+python3 - "$repo_dir" "$codex_home" <<'PY'
+import sys
+import tomllib
+from pathlib import Path
+
+repo = Path(sys.argv[1])
+codex_home = Path(sys.argv[2])
+
+source_agents = repo / "global" / "agents"
+required_agents = [
+    "pm",
+    "architect",
+    "backend",
+    "frontend",
+    "qa",
+    "review",
+    "stitch-frontend",
+]
+readonly_agents = {"pm", "architect", "qa", "review"}
+
+for name in required_agents:
+    path = source_agents / f"{name}.toml"
+    data = tomllib.loads(path.read_text())
+    for key in ("name", "description"):
+        if not data.get(key):
+            raise SystemExit(f"{path} is missing {key}")
+    if name in readonly_agents and data.get("sandbox_mode") != "read-only":
+        raise SystemExit(f"{path} must set sandbox_mode = read-only")
+
+config_path = codex_home / "config.toml"
+if config_path.exists():
+    config = tomllib.loads(config_path.read_text())
+    if config.get("mcp_servers"):
+        raise SystemExit(f"{config_path} should not define global mcp_servers")
+    if config.get("agents", {}).get("max_depth") != 1:
+        raise SystemExit(f"{config_path} must set agents.max_depth = 1")
+    for name in required_agents:
+        entry = config.get("agents", {}).get(name)
+        if not isinstance(entry, dict):
+            raise SystemExit(f"{config_path} is missing agents.{name}")
+        if entry.get("config_file") != f"agents/{name}.toml":
+            raise SystemExit(f"{config_path} has wrong config_file for {name}")
+    plugins = config.get("plugins", {})
+    required_plugins = [
+        "superpowers@openai-curated",
+        "github@openai-curated",
+        "build-ios-apps@openai-curated",
+        "codex-security@openai-curated",
+        "computer-use@openai-bundled",
+    ]
+    for name in required_plugins:
+        if plugins.get(name, {}).get("enabled") is not True:
+            raise SystemExit(f"{config_path} must enable plugin {name}")
+    browser_plugins = [
+        "browser-use@openai-bundled",
+        "chrome@openai-bundled",
+    ]
+    if not any(plugins.get(name, {}).get("enabled") is True for name in browser_plugins):
+        raise SystemExit(
+            f"{config_path} must enable browser-use or chrome for browser QA"
+        )
+    for name in [
+        "spreadsheets@openai-primary-runtime",
+        "presentations@openai-primary-runtime",
+    ]:
+        if plugins.get(name, {}).get("enabled") is True:
+            raise SystemExit(f"{config_path} should keep non-coding plugin {name} disabled")
+PY
+
+if [ -d "$codex_home" ]; then
+  require_file "$codex_home/AGENTS.md"
+  diff -q "$repo_dir/global/AGENTS.md" "$codex_home/AGENTS.md" >/dev/null
+
+  for agent in pm architect backend frontend qa review stitch-frontend; do
+    require_file "$codex_home/agents/$agent.toml"
+    diff -q "$repo_dir/global/agents/$agent.toml" "$codex_home/agents/$agent.toml" >/dev/null
+  done
+
+  require_file "$codex_home/templates/PROJECT_AGENTS.md"
+  require_file "$codex_home/templates/PROJECT_WORKLOG.md"
+  diff -q "$repo_dir/templates/PROJECT_AGENTS.md" "$codex_home/templates/PROJECT_AGENTS.md" >/dev/null
+  diff -q "$repo_dir/templates/PROJECT_WORKLOG.md" "$codex_home/templates/PROJECT_WORKLOG.md" >/dev/null
+
+  for removed_dir in \
+    "$codex_home/skills/codex-team-skills" \
+    "$codex_home/skills/stitch-skills" \
+    "$codex_home/skills/frontend-skills"; do
+    if [ -e "$removed_dir" ]; then
+      printf 'removed skill bundle still exists: %s\n' "$removed_dir" >&2
+      exit 1
+    fi
+  done
+fi
+
+superpowers_root="$(find "$codex_home/plugins/cache/openai-curated/superpowers" -maxdepth 2 -path '*/skills' -type d 2>/dev/null | head -n 1 || true)"
+if [ -z "$superpowers_root" ]; then
+  printf 'Superpowers plugin skills not found under %s\n' "$codex_home/plugins/cache/openai-curated/superpowers" >&2
+  exit 1
+fi
+
+superpowers_skill_count="$(find "$superpowers_root" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+[ "$superpowers_skill_count" = "14" ] || {
+  printf 'expected 14 Superpowers skills in %s, found %s\n' "$superpowers_root" "$superpowers_skill_count" >&2
+  exit 1
+}
+
+for skill in \
+  using-superpowers \
+  brainstorming \
+  writing-plans \
+  using-git-worktrees \
+  subagent-driven-development \
+  executing-plans \
+  dispatching-parallel-agents \
+  test-driven-development \
+  systematic-debugging \
+  requesting-code-review \
+  receiving-code-review \
+  verification-before-completion \
+  finishing-a-development-branch \
+  writing-skills; do
+  require_file "$superpowers_root/$skill/SKILL.md"
+done
+
+security_root="$(find "$codex_home/plugins/cache/openai-curated/codex-security" -maxdepth 2 -path '*/skills' -type d 2>/dev/null | head -n 1 || true)"
+if [ -z "$security_root" ]; then
+  printf 'Codex Security plugin skills not found under %s\n' "$codex_home/plugins/cache/openai-curated/codex-security" >&2
+  exit 1
+fi
+
+security_skill_count="$(find "$security_root" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+[ "$security_skill_count" = "6" ] || {
+  printf 'expected 6 Codex Security skills in %s, found %s\n' "$security_root" "$security_skill_count" >&2
+  exit 1
+}
+
+for skill in \
+  security-scan \
+  threat-model \
+  finding-discovery \
+  validation \
+  attack-path-analysis \
+  fix-finding; do
+  require_file "$security_root/$skill/SKILL.md"
+done
+
+echo "agent workflow checks passed"

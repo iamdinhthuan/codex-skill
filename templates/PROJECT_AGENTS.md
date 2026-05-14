@@ -17,6 +17,11 @@ Global Codex behavior, team workflow, and shared skills are loaded from
 - Keep changes small, scoped, and traceable to the user's request.
 - Update `docs/WORKLOG.md` whenever meaningful task status changes.
 - Do not commit unrelated worktree changes.
+- Before non-trivial implementation, validate the approach against real project
+  files and define the intended verification.
+- For subagent handoffs, include one status label (`[DONE]`, `[BLOCKED]`,
+  `[HANDOFF]`, or `[NOOP]`), changed files, verification, risks or blockers,
+  and the next coordinator action.
 
 ## Verification
 

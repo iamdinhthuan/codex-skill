@@ -1,86 +1,65 @@
 # Skill Review
 
-Review date: 2026-04-24
+Review date: 2026-05-13
 
 Scope:
-- `skills/codex-team-skills/`
-- `skills/stitch-skills/`
-- global install paths under `~/.codex/skills/`
+- Installed Superpowers plugin under `~/.codex/plugins/cache/openai-curated/superpowers/`
+- Removed repo-managed skill bundles under `skills/`
+- Removed runtime skill bundles under `~/.codex/skills/`
 
 ## Summary
 
-The curated `everything-claude-code` bundle has been renamed to
-`codex-team-skills` and reviewed for Codex fit. The main required changes were
-runtime assumptions: Claude-specific paths, `claude agents`, PreToolUse hooks,
-Context7-only docs lookup, and Claude-branded examples.
+This repo no longer vendors or installs its own skill set. The workflow now uses
+100% of the installed Superpowers plugin skills for planning, TDD, debugging,
+subagent execution, review, and completion.
 
-The Stitch bundle stays named `stitch-skills` because it is a product/source
-name, not a Claude-specific name.
+Repo decision:
+- Keep global prompts, specialist agent TOML files, templates, and runtime
+  helper scripts in this repo.
+- Do not copy skill bundles from this repo into `~/.codex/skills/`.
+- Remove old `codex-team-skills`, `stitch-skills`, and `frontend-skills`
+  runtime directories during sync.
+- Verify that the Superpowers plugin exposes 14 `SKILL.md` files before
+  claiming the runtime is ready.
 
-## Codex Team Skills
+## Superpowers Skills
 
-| Skill | Status | Review Notes |
-| --- | --- | --- |
-| `accessibility` | OK | Generic WCAG 2.2 guidance; no Codex-specific changes needed beyond neutral origin metadata. |
-| `ai-regression-testing` | Updated | Changed trigger language from named AI agents to generic AI coding agent. The `.claude/commands` example is illustrative only and does not affect runtime. |
-| `api-design` | OK | Generic REST API guidance; no Codex-specific changes needed. |
-| `backend-patterns` | OK | Generic backend patterns; no Codex-specific changes needed. |
-| `blueprint` | Updated | Replaced Claude/ECC install assumptions with repo-local `skills/codex-team-skills/...` guidance. |
-| `browser-qa` | Updated | Replaced `claude-in-chrome` preference with Playwright MCP / Browserbase / direct browser automation guidance for Codex. |
-| `coding-standards` | Updated | Replaced "narrower ECC skill" wording with "narrower Codex team skill". |
-| `council` | Updated | Changed "in-context Claude voice" and ECC example language to Codex team wording. |
-| `database-migrations` | OK | Generic migration guidance; no Codex-specific changes needed. |
-| `documentation-lookup` | Updated | Removed Context7-only assumption; now uses available docs MCPs, official docs, local docs, or official web sources. |
-| `e2e-testing` | OK | Generic Playwright guidance; no Codex-specific changes needed. |
-| `frontend-design` | OK | Generic frontend design guidance; compatible with Codex frontend rules. |
-| `frontend-patterns` | OK | Generic React/Next.js guidance; no Codex-specific changes needed. |
-| `gateguard` | Updated | Replaced Claude PreToolUse hook assumption with a Codex pre-action checklist workflow. |
-| `hexagonal-architecture` | OK | Generic architecture guidance; no Codex-specific changes needed. |
-| `product-capability` | Updated | Replaced ECC-native wording with Codex team lane wording. |
-| `product-lens` | OK | Generic product diagnosis guidance; no Codex-specific changes needed. |
-| `safety-guard` | Updated | Replaced PreToolUse hook/runtime log assumptions with Codex approval/sandbox/worklog guidance. |
-| `search-first` | Updated | Replaced `~/.claude` paths, Claude skill wording, Context7-only SDK docs, and generic Task call with Codex paths and `spawn_agent` guidance. |
-| `security-review` | OK | Generic security review guidance; no Codex-specific changes needed. |
-| `tdd-workflow` | OK | Generic testing workflow; no Codex-specific changes needed. |
-| `team-builder` | Updated | Replaced `claude agents` discovery with runtime roles from `~/.codex/config.toml`, optional personas from `./agents` and `~/.codex/agents`, built-in Codex team roles, and explicit single-writer parallel dispatch rules. |
-| `verification-loop` | Updated | Rebranded from Claude Code sessions to Codex sessions. |
+| Skill | Use |
+| --- | --- |
+| `using-superpowers` | Entry point for skill selection discipline. |
+| `brainstorming` | Requirement and design clarification before implementation. |
+| `writing-plans` | Detailed implementation plans after an approved design. |
+| `using-git-worktrees` | Isolated workspaces for feature work. |
+| `subagent-driven-development` | Plan execution with fresh subagents and review stages. |
+| `executing-plans` | Sequential plan execution with checkpoints. |
+| `dispatching-parallel-agents` | Parallel investigation for independent tasks. |
+| `test-driven-development` | RED-GREEN-REFACTOR implementation discipline. |
+| `systematic-debugging` | Root-cause debugging before fixes. |
+| `requesting-code-review` | Structured review before merge or handoff. |
+| `receiving-code-review` | Technical handling of review feedback. |
+| `verification-before-completion` | Evidence gate before completion claims. |
+| `finishing-a-development-branch` | Final branch integration workflow. |
+| `writing-skills` | Creating or editing skills when explicitly needed. |
 
-## Stitch Skills
+## Removed Repo-Managed Skills
 
-| Skill | Status | Review Notes |
-| --- | --- | --- |
-| `design-md` | OK | Purpose-built for Stitch design-system docs. Requires Stitch project context or local screenshots. |
-| `enhance-prompt` | OK | Useful before Stitch generation/editing. No local runtime assumptions. |
-| `react:components` | OK with constraint | Fits Stitch-to-React conversion. Requires Stitch MCP metadata or local `.stitch/designs` files; validation depends on its local package scripts. |
-| `remotion` | Optional | Useful only when the user asks for walkthrough/video output. Keep out of normal frontend work. |
-| `shadcn-ui` | Conditional | Use only if the target React project already uses or requests shadcn/ui. |
-| `stitch-design` | OK | Main Stitch design entry point. Requires Stitch MCP for generation/edit flows; otherwise use prompt/design-doc portions only. |
-| `stitch-loop` | Conditional | Use only for multi-page site generation from one prompt; broader scope than normal component/page edits. |
-| `taste-design` | OK | Useful design-system guardrail for avoiding generic AI UI; should be balanced with existing project design systems. |
+| Removed bundle | Reason |
+| --- | --- |
+| `skills/codex-team-skills/` | Replaced by Superpowers plugin workflows. |
+| `skills/frontend-skills/` | Replaced by Superpowers plugin workflows and project-local UI patterns. |
+| `skills/stitch-skills/` | Already removed; kept absent. |
 
-## Project-Level Review
+## Verification Rule
 
-Findings:
-- The repo now has a clear global/local split: global behavior lives in
-  `~/.codex/AGENTS.md`, while this repo stores source-controlled prompts,
-  vendored skills, bootstrap docs, and work logs.
-- `docs/WORKLOG.md` gives future conversations durable task state. Keep it
-  concise; do not turn it into a transcript.
-- The renamed `skills/codex-team-skills/` path is clearer for Codex users while
-  preserving upstream attribution.
-- `skills/stitch-skills/` is correctly kept separate because it is sourced from
-  Google Stitch, not the Codex team skill bundle.
+After changing skill routing or runtime sync, run:
 
-Risks:
-- Vendored skills can drift from upstream. Update only from reviewed pinned
-  commits and document the new source commit.
-- Global files under `~/.codex` are not source-controlled by this repo. When
-  changing global behavior, mirror the durable explanation in `docs/`.
-- `SKILL.md` is deleted in the current worktree but unrelated to this scope; do
-  not stage it unless the user explicitly asks.
+```bash
+bin/sync-codex-runtime ~/.codex
+bin/check-agent-workflow ~/.codex
+```
 
-Recommendation:
-- Keep `codex-team-skills` as the bundle name.
-- Keep `stitch-skills` as the Stitch source bundle name.
-- Treat `docs/SKILL_REVIEW.md` as the checklist to update whenever adding,
-  removing, renaming, or adapting skills.
+The check must confirm:
+- old repo-managed skill directories are absent in runtime
+- Superpowers plugin exists
+- exactly 14 Superpowers `SKILL.md` files are present
+- expected specialist agent TOML files still parse and sync

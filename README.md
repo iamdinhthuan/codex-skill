@@ -14,14 +14,10 @@ real code when requested, verify the result, and report only the useful output.
   its global Codex operating model
 - `docs/GLOBAL_BOOTSTRAP.md` - how global Codex instructions, skills, and
   project work logs are bootstrapped into new projects
-- `docs/SKILL_REVIEW.md` - review notes for each vendored skill and its
-  Codex-specific adaptations
+- `docs/SKILL_REVIEW.md` - review notes for moving from vendored skills to the
+  Superpowers plugin
 - `docs/WORKLOG.md` - durable task memory for completed, active, pending,
   blocked, and skipped work
-- `skills/codex-team-skills/` - Codex-adapted curated local copies of
-  essential skills from `affaan-m/everything-claude-code`
-- `skills/stitch-skills/` - local copies of Google Stitch skills for
-  AI-assisted frontend design and Stitch-to-React workflows
 - `global/AGENTS.md` - global Codex instructions copied to `~/.codex/AGENTS.md`
 - `global/agents/` - named specialist subagent config copied to
   `~/.codex/agents/`
@@ -37,15 +33,15 @@ ambiguous enough to affect product behavior, architecture, data, security, or
 UX, the PM role asks up to 5 focused questions; otherwise the team continues
 with explicit assumptions.
 
-The local skill set is intentionally small. Framework-specific, infrastructure,
-benchmarking, and skill-audit skills are excluded until repo evidence shows
-they are needed.
+The repo no longer owns a local skill set. Workflow skills come from the
+installed Superpowers plugin; this repo only keeps global prompts, agent
+configuration, templates, and verification scripts.
 
 ## Quick Install On Another Machine
 
 Use this when setting up a new machine with the same Codex team workflow,
-specialist subagents, skills, project bootstrap templates, and agent-mail
-coordination.
+specialist subagents, Superpowers plugin workflow, and project bootstrap
+templates.
 
 ### 1. Clone And Install Runtime
 
@@ -59,15 +55,18 @@ This installs:
 
 - `~/.codex/AGENTS.md`
 - `~/.codex/agents/*.toml`
-- `~/.codex/skills/codex-team-skills/`
-- `~/.codex/skills/stitch-skills/`
 - `~/.codex/templates/`
 - `~/.codex/bin/codex-bootstrap-project`
 - `~/.codex/bin/sync-codex-runtime`
+- `~/.codex/bin/check-agent-workflow`
+
+It also removes old repo-managed skill bundles from `~/.codex/skills/`. Skills
+come from the installed Superpowers plugin.
 
 ### 2. Configure Codex
 
-Add or verify these blocks in `~/.codex/config.toml`:
+Install the Superpowers plugin from the Codex plugin marketplace, then add or
+verify these blocks in `~/.codex/config.toml`:
 
 ```toml
 [features]
@@ -76,7 +75,7 @@ multi_agent = true
 
 [agents]
 max_threads = 12
-max_depth = 2
+max_depth = 1
 job_max_runtime_seconds = 1800
 
 [agents.pm]
@@ -110,52 +109,52 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
+description = "Frontend design specialist for UI direction, design-system prompts, visual references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
+[plugins."superpowers@openai-curated"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."build-ios-apps@openai-curated"]
+enabled = true
+
+[plugins."codex-security@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = false
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = false
 ```
 
-Optional MCP servers:
+Recommended coding plugin set:
 
-```toml
-[mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp@latest"]
+- Core workflow: `superpowers`
+- Repo, PR, and CI: `github`
+- iOS and SwiftUI: `build-ios-apps`
+- Security review and scans: `codex-security`
+- Frontend/browser QA: `browser-use` or `chrome`
+- Desktop/manual app control: `computer-use`
 
-[mcp_servers.stitch]
-url = "https://stitch.googleapis.com/mcp"
-env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
-```
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
 
-If using Stitch, set the API key in the shell that launches Codex:
-
-```bash
-export STITCH_API_KEY="your-key"
-```
-
-### 3. Install And Start Agent Mail
-
-Install `mcp_agent_mail`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
-
-Start the mail server before a Codex session where role agents should exchange
-handoffs, blockers, QA findings, review notes, or file reservations:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Codex agents should register against the target repo path as `project_key`, use
-one shared `thread_id` per task, and use the registered agent name/token returned
-by the mail server. Requested names may be replaced by canonical names.
-
-### 4. Verify Install
+### 3. Verify Install
 
 ```bash
 test -f ~/.codex/AGENTS.md
@@ -167,9 +166,11 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
-grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
-find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
+test -x ~/.codex/bin/check-agent-workflow
+~/.codex/bin/check-agent-workflow
+test ! -d ~/.codex/skills/codex-team-skills
+test ! -d ~/.codex/skills/frontend-skills
+find ~/.codex/plugins/cache/openai-curated/superpowers -path '*/skills/*/SKILL.md' | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -177,10 +178,10 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected skill counts:
 
-- `codex-team-skills`: 23
-- `stitch-skills`: 8
+- Superpowers plugin skills: 14
+- Codex Security plugin skills: 6
 
-### 5. Use In A Project
+### 4. Use In A Project
 
 Open Codex inside any repo. The global `~/.codex/AGENTS.md` should load
 automatically. For meaningful implementation, planning, review, or debugging,
@@ -190,11 +191,12 @@ Codex should:
 2. Use PM, Architect, Backend, Frontend, QA, Review, and Stitch roles as needed.
 3. Spawn real subagents when work has independent role/file slices.
 4. Run read-only discovery/review agents first.
-5. Assign writing agents exclusive file ownership.
-6. Use `mcp_agent_mail` for handoffs, blockers, QA findings, review feedback,
-   inbox checks, and file reservations when the server is configured.
-7. Send writing-agent handoffs through QA before final Review.
-8. Route QA failures back to the owning writer for up to 3 focused repair
+5. Validate the approach against repo reality before any writing agent edits.
+6. Assign writing agents exclusive file ownership.
+7. Coordinate through the parent thread with structured handoffs and record durable state in
+   `docs/WORKLOG.md`.
+8. Send writing-agent handoffs through QA before final Review.
+9. Route QA failures back to the owning writer for up to 3 focused repair
    cycles before Review or Blocked.
 
 Manual project bootstrap:
@@ -210,31 +212,12 @@ After changing this repo on a client machine, refresh the installed runtime:
 cd ~/codex_skill
 git pull --ff-only
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```
 
-## Source Attribution
+## Skill Source
 
-The curated skill files under `skills/codex-team-skills/` are adapted from:
+This repo no longer vendors skill files. Workflow skills come from the installed
+Superpowers plugin:
 
-https://github.com/affaan-m/everything-claude-code
-
-Pinned source commit:
-
-```text
-4e66b2882da9afb9747468b08a253ca2f09c85f3
-```
-
-The copied upstream license is available at
-`skills/codex-team-skills/LICENSE`.
-
-The Stitch skill files under `skills/stitch-skills/` come from:
-
-https://github.com/google-labs-code/stitch-skills
-
-Pinned source commit:
-
-```text
-6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140
-```
-
-The copied upstream license is available at `skills/stitch-skills/LICENSE`.
+https://github.com/obra/superpowers

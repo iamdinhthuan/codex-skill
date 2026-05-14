@@ -1,7 +1,7 @@
 # Client Setup
 
 Use this guide to make another machine read this repo and install the same
-Codex team workflow, skills, Stitch design support, and project work-log
+Codex team workflow, Superpowers plugin workflow, and project work-log
 bootstrap.
 
 ## 1. Clone The Repo
@@ -20,32 +20,18 @@ git switch codex/add-stitch-skills
 
 ## 2. Install Into Codex Home
 
-The install copies shared instructions, named specialist agents, skill bundles,
-templates, and helper scripts into `~/.codex`.
+The install copies shared instructions, named specialist agents, templates, and
+helper scripts into `~/.codex`. It removes old repo-managed skill bundles; skill
+workflow comes from the installed Superpowers plugin.
 
 ```bash
 bin/sync-codex-runtime ~/.codex
 ```
 
-## 3. Configure MCP Servers
+## 3. Configure Codex
 
-Codex can use the skills without MCP, but Stitch design generation requires a
-configured Stitch MCP server. For role-to-role coordination, install and run
-`mcp_agent_mail` too.
-
-Install `mcp_agent_mail`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
-
-Start the server when you want agent mail enabled:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Add or verify these entries in `~/.codex/config.toml`:
+Install the Superpowers plugin from the Codex plugin marketplace, then add or
+verify these entries in `~/.codex/config.toml`.
 
 ```toml
 [features]
@@ -54,7 +40,7 @@ multi_agent = true
 
 [agents]
 max_threads = 12
-max_depth = 2
+max_depth = 1
 job_max_runtime_seconds = 1800
 
 [agents.pm]
@@ -88,27 +74,51 @@ config_file = "agents/review.toml"
 nickname_candidates = ["Review", "Guard", "Auditor"]
 
 [agents.stitch-frontend]
-description = "Stitch frontend design specialist for AI-assisted UI design, Stitch MCP workflows, prompt enhancement, .stitch/DESIGN.md, and React conversion."
+description = "Frontend design specialist for UI direction, design-system prompts, visual references, .stitch/DESIGN.md, and frontend conversion."
 config_file = "agents/stitch-frontend.toml"
 nickname_candidates = ["Stitch", "Design", "UX"]
 
-[mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp@latest"]
+[plugins."superpowers@openai-curated"]
+enabled = true
 
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
+[plugins."github@openai-curated"]
+enabled = true
 
-[mcp_servers.stitch]
-url = "https://stitch.googleapis.com/mcp"
-env_http_headers = { "X-Goog-Api-Key" = "STITCH_API_KEY" }
+[plugins."build-ios-apps@openai-curated"]
+enabled = true
+
+[plugins."codex-security@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = false
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = false
+
 ```
 
-Set the API key in the shell environment used to launch Codex:
+Recommended coding plugin set:
 
-```bash
-export STITCH_API_KEY="your-key"
-```
+- Core workflow: `superpowers`
+- Repo, PR, and CI: `github`
+- iOS and SwiftUI: `build-ios-apps`
+- Security review and scans: `codex-security`
+- Frontend/browser QA: `browser-use` or `chrome`
+- Desktop/manual app control: `computer-use`
+
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
 
 Do not commit secrets into this repo or into project files.
 
@@ -124,9 +134,11 @@ test -f ~/.codex/agents/qa.toml
 test -f ~/.codex/agents/review.toml
 test -f ~/.codex/agents/stitch-frontend.toml
 test -x ~/.codex/bin/sync-codex-runtime
-grep -n "\[mcp_servers.mcp_agent_mail\]" ~/.codex/config.toml
-find ~/.codex/skills/codex-team-skills -maxdepth 2 -name SKILL.md | wc -l
-find ~/.codex/skills/stitch-skills -maxdepth 2 -name SKILL.md | wc -l
+test -x ~/.codex/bin/check-agent-workflow
+~/.codex/bin/check-agent-workflow
+test ! -d ~/.codex/skills/codex-team-skills
+test ! -d ~/.codex/skills/frontend-skills
+find ~/.codex/plugins/cache/openai-curated/superpowers -path '*/skills/*/SKILL.md' | wc -l
 ~/.codex/bin/codex-bootstrap-project /tmp/codex-bootstrap-test
 test -f /tmp/codex-bootstrap-test/docs/WORKLOG.md
 test -f /tmp/codex-bootstrap-test/AGENTS.md
@@ -134,8 +146,8 @@ test -f /tmp/codex-bootstrap-test/AGENTS.md
 
 Expected counts:
 
-- `codex-team-skills`: 23
-- `stitch-skills`: 8
+- Superpowers plugin skills: 14
+- Codex Security plugin skills: 6
 
 ## 5. Daily Usage
 
@@ -151,8 +163,10 @@ When meaningful work starts, Codex should:
    subagents should be spawned for PM, Architect, Backend, Frontend, QA,
    Review, or Stitch design work.
 5. For non-trivial implementation, run review/discovery agents read-only first,
-   then assign writing implementation agents by exclusive file ownership.
-6. Keep the main agent focused on orchestration, handoff merge, conflict
+   validate the approach against repo reality, then assign writing
+   implementation agents by exclusive file ownership.
+6. Keep the main agent focused on orchestration, structured handoff merge,
+   conflict
    resolution, final verification, and work-log updates unless a file is shared,
    conflict-prone, or explicitly unassigned.
 7. After Backend, Frontend, Stitch frontend, or other writing agents finish,
@@ -161,10 +175,8 @@ When meaningful work starts, Codex should:
    file ownership back to the owning implementation agent, then have QA re-run
    the focused checks. Repeat up to 3 repair cycles before passing Review or
    marking the task Blocked.
-8. When using `mcp_agent_mail`, use the registered name and token returned by
-   the mail server for later sends. If contact policy blocks a handoff, request
-   contact approval or retry with `auto_contact_if_blocked` when available.
-9. Keep the work log current when task status changes.
+8. Keep coordination in the parent Codex thread and keep
+   `docs/WORKLOG.md` current when task status changes.
 
 Manual bootstrap is available:
 
@@ -182,6 +194,7 @@ architecture constraints, style rules, domain context, and deployment notes.
 cd ~/codex_skill
 git pull --ff-only
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```
 
 After updating, rerun the verification commands above.
@@ -190,9 +203,6 @@ After updating, rerun the verification commands above.
 
 - If Codex does not follow the team workflow, verify `~/.codex/AGENTS.md`
   exists and restart the Codex session.
-- If a skill is missing, verify the expected `SKILL.md` counts.
-- If agent-to-agent coordination does not work, verify the local
-  `mcp_agent_mail` server is running on `http://127.0.0.1:8765/api/`.
-- If Stitch generation fails, verify `STITCH_API_KEY` is set and the Stitch MCP
-  server is configured.
+- If a skill is missing, verify the Superpowers plugin is installed and exposes
+  14 `SKILL.md` files.
 - If a project should not create local docs, tell Codex the task is read-only.

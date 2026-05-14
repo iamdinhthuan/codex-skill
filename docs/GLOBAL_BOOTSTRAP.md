@@ -2,7 +2,7 @@
 
 This repo is the source of the shared Codex operating model. The local machine
 also has a global install under `~/.codex` so new projects can inherit the team
-workflow, skill stack, Stitch frontend design rules, and task memory behavior.
+workflow, Superpowers plugin workflow, and task memory behavior.
 
 ## What Loads Automatically
 
@@ -17,33 +17,32 @@ Use the repo sync helper to install or refresh the runtime files:
 bin/sync-codex-runtime ~/.codex
 ```
 
-Global skills are installed at:
+Workflow skills come from the installed Superpowers plugin. This repo no longer
+installs skill bundles into:
 
 - `~/.codex/skills/codex-team-skills/`
-- `~/.codex/skills/stitch-skills/`
+- `~/.codex/skills/frontend-skills/`
 
-These skills should be loaded only when their trigger matches the current task.
+Those old directories are removed during runtime sync.
 
-## MCP Agent Mail
+Recommended coding plugins:
 
-For role-to-role coordination, install `mcp_agent_mail`:
+- `superpowers@openai-curated` for the core workflow.
+- `github@openai-curated` for repo, PR, CI, and publish workflows.
+- `build-ios-apps@openai-curated` for iOS and SwiftUI work.
+- `codex-security@openai-curated` for security scans, threat modeling,
+  finding validation, attack-path analysis, and security finding fixes.
+- `browser-use@openai-bundled` or `chrome@openai-bundled` for frontend/browser
+  QA.
+- `computer-use@openai-bundled` for desktop or simulator workflows that need
+  manual app control.
 
-```bash
-curl -fsSL "https://raw.githubusercontent.com/Dicklesworthstone/mcp_agent_mail/main/scripts/install.sh?$(date +%s)" | bash -s -- --yes --no-start
-```
+Keep productivity plugins such as `spreadsheets` and `presentations` disabled
+unless the task is specifically about those file types.
 
-Start it when you want mail-based coordination enabled:
-
-```bash
-uv run python -m mcp_agent_mail.cli serve-http
-```
-
-Add this MCP server entry to `~/.codex/config.toml`:
-
-```toml
-[mcp_servers.mcp_agent_mail]
-url = "http://127.0.0.1:8765/api/"
-```
+No global MCP servers are required for the baseline. Prefer plugin-provided
+tools: `build-ios-apps` supplies XcodeBuildMCP-backed workflows, and the
+browser plugins cover frontend/browser QA.
 
 ## Specialist Subagents
 
@@ -75,17 +74,16 @@ entries that point at those files. The intended specialist roles are:
   verification.
 - `review` for architecture, security, maintainability, and missing-test
   review.
-- `stitch-frontend` for Stitch design, prompt enhancement, `.stitch/DESIGN.md`,
-  and Stitch-to-React work.
+- `stitch-frontend` for frontend design prompts, visual references,
+  `.stitch/DESIGN.md`, and frontend conversion work.
 
 The global `AGENTS.md` keeps the workflow compact: review/discovery agents run
-read-only first, implementation agents write second with exclusive file
-ownership, and the main agent orchestrates, merges, verifies, and updates the
-work log. QA routes failures back to the owning writer for up to 3 focused
-repair cycles before Review or Blocked. If `mcp_agent_mail` is configured, the
-agents should use it for handoffs, inbox checks, and file reservations. Agents
-should use the registered name and token returned by the mail server because
-requested names may be replaced with canonical names.
+read-only first, the main agent validates the approach against repo reality,
+implementation agents write second with exclusive file ownership, and the main
+agent orchestrates, merges structured handoffs, verifies, and updates the work
+log. Coordination stays local to Codex subagents and the parent thread.
+QA routes failures back to the owning writer for up to 3 focused repair cycles
+before Review or Blocked.
 
 ## Project Memory
 
@@ -135,4 +133,5 @@ When this repo changes shared runtime files, re-sync them with:
 
 ```bash
 bin/sync-codex-runtime ~/.codex
+~/.codex/bin/check-agent-workflow
 ```
